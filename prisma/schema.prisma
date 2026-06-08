@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum KYCStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum InvestmentStatus {
+  ACTIVE
+  MATURED
+  WITHDRAWN
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  PAYOUT
+  INVESTMENT
+  TOPUP
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PayoutStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  FAILED
+}
+
+enum ContentSection {
+  HERO
+  ABOUT
+  TELEGRAM
+  FOOTER
+}
+
+enum ContentType {
+  TEXT
+  IMAGE_URL
+  BOOLEAN
+  NUMBER
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  phone            String?   @unique
+  passwordHash     String
+  name             String
+  role             Role      @default(USER)
+  kycStatus        KYCStatus @default(PENDING)
+  walletBalance    Float     @default(0.0)
+  isBlocked        Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  kyc              KYC?
+  investments      Investment[]
+  transactions     Transaction[]
+  payouts          Payout[]
+  withdrawals      WithdrawalRequest[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]          @relation("AdminAuditLogs")
+}
+
+model KYC {
+  id                 String    @id @default(uuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  panNumber          String
+  panDocument        String
+  aadhaarNumber      String
+  aadhaarDocument    String
+  bankAccountNumber  String
+  ifscCode           String
+  accountHolderName  String
+  status             KYCStatus @default(PENDING)
+  rejectionReason    String?
+  reviewedAt         DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model FDPlan {
+  id                   String       @id @default(uuid())
+  name                 String
+  description          String
+  minAmount            Float
+  maxAmount            Float
+  tenureMonths         Int
+  monthlyReturnPercent Float
+  isActive             Boolean      @default(true)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  investments          Investment[]
+}
+
+model Investment {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId           String
+  plan             FDPlan           @relation(fields: [planId], references: [id])
+  principalAmount  Float
+  monthlyReturn    Float
+  startDate        DateTime         @default(now())
+  maturityDate     DateTime
+  status           InvestmentStatus @default(ACTIVE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  payouts          Payout[]
+}
+
+model Transaction {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          TransactionType
+  amount        Float
+  razorpayId    String?           @unique
+  status        TransactionStatus @default(PENDING)
+  description   String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model Payout {
+  id           String       @id @default(uuid())
+  investmentId String
+  investment   Investment   @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount       Float
+  scheduledFor DateTime
+  paidOn       DateTime?
+  status       PayoutStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model WithdrawalRequest {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount           Float
+  status           WithdrawalStatus @default(PENDING)
+  razorpayPayoutId String?          @unique
+  rejectionReason  String?
+  processedAt      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model LandingContent {
+  id          String         @id @default(uuid())
+  section     ContentSection
+  key         String         @unique
+  value       String         @db.Text
+  contentType ContentType    @default(TEXT)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Video {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?  @db.Text
+  videoUrl     String
+  thumbnailUrl String?
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Testimonial {
+  id           String   @id @default(uuid())
+  name         String
+  role         String?
+  message      String   @db.Text
+  rating       Int      @default(5)
+  imageUrl     String?
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model FAQ {
+  id           String   @id @default(uuid())
+  question     String   @db.Text
+  answer       String   @db.Text
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  adminId     String
+  admin       User     @relation("AdminAuditLogs", fields: [adminId], references: [id])
+  action      String
+  targetModel String
+  targetId    String
+  oldValue    String?  @db.Text
+  newValue    String?  @db.Text
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String   @db.Text
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
