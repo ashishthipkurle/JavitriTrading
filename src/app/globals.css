@@ -26,4 +26,14 @@ body {
 
 html {
   scroll-behavior: smooth;
+  zoom: 1.25;
+}
+
+/* Hide scrollbar but keep scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

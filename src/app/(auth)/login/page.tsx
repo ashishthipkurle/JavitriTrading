@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const registered = searchParams.get("registered");
 
@@ -21,21 +22,19 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const res = await signIn("credentials", {
+      // Import here to avoid client component issues if not careful, though createClient is safe.
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
-        redirect: false,
       });
 
-      if (res?.error) {
-        setError("Invalid email or password");
+      if (authError) {
+        setError(authError.message || "Invalid email or password");
       } else {
-        const session = await getSession();
-        if (session?.user?.role === "ADMIN") {
-          router.push("/admin");
-        } else {
-          router.push("/dashboard");
-        }
+        router.push("/dashboard");
         router.refresh();
       }
     } catch (err) {
@@ -106,10 +105,17 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
                   required 
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                 />
-                <button aria-label="Toggle password visibility" className="absolute right-sm top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors focus:outline-none" type="button">
-                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>visibility</span>
+                <button 
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle password visibility" 
+                  className="absolute right-sm top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors focus:outline-none" 
+                  type="button"
+                >
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
                 </button>
               </div>
             </div>

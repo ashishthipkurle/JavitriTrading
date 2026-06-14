@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Sidebar from './Sidebar';
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -9,10 +8,10 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const user = await getAuthUser();
   
   // Force admin users to the admin dashboard instead of user dashboard
-  if (session?.user?.role === "ADMIN") {
+  if (user?.role === "ADMIN") {
     redirect("/admin");
   }
 

@@ -36,31 +36,42 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      const { data, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+            phone: formData.phone
+          }
+        }
       });
 
-      const data = await response.json();
+      if (authError) {
+        setError(authError.message || "Registration failed");
+        setIsLoading(false);
+        return;
+      }
 
-      if (!response.ok) {
-        setError(data.error || "Registration failed");
+      // Create profile in Prisma
+      const profileRes = await fetch('/api/v1/auth/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+        }),
+      });
+
+      if (!profileRes.ok) {
+        const errorData = await profileRes.json();
+        setError(errorData.error || "Failed to create profile");
       } else {
-        // Automatically sign in the user
-        const signInRes = await signIn("credentials", {
-          email: formData.email,
-          password: formData.password,
-          redirect: false,
-        });
-
-        if (signInRes?.error) {
-          router.push('/login?registered=true');
-        } else {
-          router.push('/register/kyc');
-        }
+        router.push('/dashboard');
+        router.refresh();
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");

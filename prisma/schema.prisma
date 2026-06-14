@@ -3,13 +3,38 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  phone          String         @unique
+  name           String         @default("")
+  role           Role           @default(CLIENT)
+  accountOrigin  AccountOrigin  @default(SELF_REGISTERED)
+  managedBy      String?
+  manager        User?          @relation("EmployeeClients", fields: [managedBy], references: [id])
+  clients        User[]         @relation("EmployeeClients")
+  kycStatus      KYCStatus      @default(PENDING)
+  walletBalance  Decimal        @default(0)    @db.Decimal(14,2)
+  isBlocked      Boolean        @default(false)
+  twoFASecret    String?
+  createdAt      DateTime       @default(now())
+  kyc               KYC?
+  investments       Investment[]
+  transactions      Transaction[]
+  withdrawals       WithdrawalRequest[]
+  commissionsEarned Commission[]        @relation("EmployeeCommissions")
+  auditLogs         AuditLog[]
 }
 
 enum Role {
-  USER
   ADMIN
+  EMPLOYEE
+  CLIENT
 }
 
 enum KYCStatus {
@@ -18,10 +43,105 @@ enum KYCStatus {
   REJECTED
 }
 
+enum AccountOrigin {
+  SELF_REGISTERED
+  EMPLOYEE_MANAGED
+}
+
+model KYC {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  panNumber     String // AES-256-GCM encrypted
+  aadhaarNumber String // AES-256-GCM encrypted
+  bankAccount   String // AES-256-GCM encrypted
+  ifsc          String
+  panDocUrl     String?
+  aadhaarDocUrl String?
+  rejectionNote String?
+  updatedAt     DateTime @updatedAt
+}
+
+model FDPlan {
+  id                   String       @id @default(cuid())
+  name                 String
+  description          String
+  minAmount            Decimal      @db.Decimal(14, 2)
+  maxAmount            Decimal      @db.Decimal(14, 2)
+  tenureMonths         Int
+  monthlyReturnPercent Decimal      @db.Decimal(5, 2)
+  isActive             Boolean      @default(true)
+  createdAt            DateTime     @default(now())
+  investments          Investment[]
+}
+
+model Investment {
+  id            String           @id @default(cuid())
+  userId        String
+  user          User             @relation(fields: [userId], references: [id])
+  planId        String
+  plan          FDPlan           @relation(fields: [planId], references: [id])
+  managedBy     String?
+  amount        Decimal          @db.Decimal(14, 2)
+  startDate     DateTime
+  maturityDate  DateTime
+  status        InvestmentStatus @default(ACTIVE)
+  monthlyReturn Decimal          @db.Decimal(14, 2)
+  totalEarned   Decimal          @default(0) @db.Decimal(14, 2)
+  payouts       Payout[]
+  commissions   Commission[]
+  createdAt     DateTime         @default(now())
+}
+
 enum InvestmentStatus {
   ACTIVE
   MATURED
   WITHDRAWN
+}
+
+model Payout {
+  id           String       @id @default(cuid())
+  investmentId String
+  investment   Investment   @relation(fields: [investmentId], references: [id])
+  amount       Decimal      @db.Decimal(14, 2)
+  paidOn       DateTime
+  status       PayoutStatus @default(PENDING)
+  razorpayId   String?
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model Commission {
+  id           String           @id @default(cuid())
+  employeeId   String
+  employee     User             @relation("EmployeeCommissions", fields: [employeeId], references: [id])
+  investmentId String
+  investment   Investment       @relation(fields: [investmentId], references: [id])
+  payoutId     String           @unique
+  amount       Decimal          @db.Decimal(14, 2)
+  status       CommissionStatus @default(PENDING)
+  createdAt    DateTime         @default(now())
+}
+
+enum CommissionStatus {
+  PENDING
+  PAID
+}
+
+model Transaction {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id])
+  type       TransactionType
+  amount     Decimal         @db.Decimal(14, 2)
+  razorpayId String?
+  status     TxStatus        @default(PENDING)
+  meta       Json?
+  createdAt  DateTime        @default(now())
 }
 
 enum TransactionType {
@@ -29,228 +149,94 @@ enum TransactionType {
   WITHDRAWAL
   PAYOUT
   INVESTMENT
-  TOPUP
 }
 
-enum TransactionStatus {
+enum TxStatus {
   PENDING
-  COMPLETED
+  SUCCESS
   FAILED
+  REVERSED
 }
 
-enum PayoutStatus {
-  PENDING
-  PAID
-  FAILED
+model WithdrawalRequest {
+  id               String           @id @default(cuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id])
+  amount           Decimal          @db.Decimal(14, 2)
+  status           WithdrawalStatus @default(PENDING)
+  razorpayPayoutId String?
+  failureReason    String?
+  createdAt        DateTime         @default(now())
 }
 
 enum WithdrawalStatus {
   PENDING
   APPROVED
-  REJECTED
+  PROCESSING
   COMPLETED
   FAILED
 }
 
-enum ContentSection {
-  HERO
-  ABOUT
-  TELEGRAM
-  FOOTER
-}
-
-enum ContentType {
-  TEXT
-  IMAGE_URL
-  BOOLEAN
-  NUMBER
-}
-
-model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
-  phone            String?   @unique
-  passwordHash     String
-  name             String
-  role             Role      @default(USER)
-  kycStatus        KYCStatus @default(PENDING)
-  walletBalance    Float     @default(0.0)
-  isBlocked        Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  kyc              KYC?
-  investments      Investment[]
-  transactions     Transaction[]
-  payouts          Payout[]
-  withdrawals      WithdrawalRequest[]
-  notifications    Notification[]
-  auditLogs        AuditLog[]          @relation("AdminAuditLogs")
-}
-
-model KYC {
-  id                 String    @id @default(uuid())
-  userId             String    @unique
-  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  panNumber          String
-  panDocument        String
-  aadhaarNumber      String
-  aadhaarDocument    String
-  bankAccountNumber  String
-  ifscCode           String
-  accountHolderName  String
-  status             KYCStatus @default(PENDING)
-  rejectionReason    String?
-  reviewedAt         DateTime?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-}
-
-model FDPlan {
-  id                   String       @id @default(uuid())
-  name                 String
-  description          String
-  minAmount            Float
-  maxAmount            Float
-  tenureMonths         Int
-  monthlyReturnPercent Float
-  isActive             Boolean      @default(true)
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
-
-  investments          Investment[]
-}
-
-model Investment {
-  id               String           @id @default(uuid())
-  userId           String
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planId           String
-  plan             FDPlan           @relation(fields: [planId], references: [id])
-  principalAmount  Float
-  monthlyReturn    Float
-  startDate        DateTime         @default(now())
-  maturityDate     DateTime
-  status           InvestmentStatus @default(ACTIVE)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-
-  payouts          Payout[]
-}
-
-model Transaction {
-  id            String            @id @default(uuid())
-  userId        String
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type          TransactionType
-  amount        Float
-  razorpayId    String?           @unique
-  status        TransactionStatus @default(PENDING)
-  description   String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-}
-
-model Payout {
-  id           String       @id @default(uuid())
-  investmentId String
-  investment   Investment   @relation(fields: [investmentId], references: [id], onDelete: Cascade)
-  userId       String
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount       Float
-  scheduledFor DateTime
-  paidOn       DateTime?
-  status       PayoutStatus @default(PENDING)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-}
-
-model WithdrawalRequest {
-  id               String           @id @default(uuid())
-  userId           String
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount           Float
-  status           WithdrawalStatus @default(PENDING)
-  razorpayPayoutId String?          @unique
-  rejectionReason  String?
-  processedAt      DateTime?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-}
-
 model LandingContent {
-  id          String         @id @default(uuid())
-  section     ContentSection
-  key         String         @unique
-  value       String         @db.Text
-  contentType ContentType    @default(TEXT)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id        String   @id @default(cuid())
+  section   String
+  key       String
+  value     String   @db.Text
+  type      CMSType  @default(TEXT)
+  updatedAt DateTime @updatedAt
+
+  @@unique([section, key])
+}
+
+enum CMSType {
+  TEXT
+  RICHTEXT
+  IMAGE_URL
+  VIDEO_URL
+  LINK
+  NUMBER
+  BOOLEAN
 }
 
 model Video {
-  id           String   @id @default(uuid())
-  title        String
-  description  String?  @db.Text
-  videoUrl     String
-  thumbnailUrl String?
-  isActive     Boolean  @default(true)
-  displayOrder Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String  @id @default(cuid())
+  title     String
+  url       String
+  thumbnail String?
+  order     Int     @default(0)
+  isActive  Boolean @default(true)
 }
 
 model Testimonial {
-  id           String   @id @default(uuid())
-  name         String
-  role         String?
-  message      String   @db.Text
-  rating       Int      @default(5)
-  imageUrl     String?
-  isActive     Boolean  @default(true)
-  displayOrder Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id       String  @id @default(cuid())
+  name     String
+  message  String  @db.Text
+  rating   Int
+  imageUrl String?
+  order    Int     @default(0)
+  isActive Boolean @default(true)
 }
 
 model FAQ {
-  id           String   @id @default(uuid())
-  question     String   @db.Text
-  answer       String   @db.Text
-  isActive     Boolean  @default(true)
-  displayOrder Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id       String  @id @default(cuid())
+  question String
+  answer   String  @db.Text
+  order    Int     @default(0)
+  isActive Boolean @default(true)
 }
 
 model SiteSettings {
-  id        String   @id @default(uuid())
-  key       String   @unique
+  key       String   @id
   value     String   @db.Text
-  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  adminId     String
-  admin       User     @relation("AdminAuditLogs", fields: [adminId], references: [id])
-  action      String
-  targetModel String
-  targetId    String
-  oldValue    String?  @db.Text
-  newValue    String?  @db.Text
-  createdAt   DateTime @default(now())
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  message   String   @db.Text
-  type      String
-  isRead    Boolean  @default(false)
+  id        String   @id @default(cuid())
+  actorId   String
+  actor     User     @relation(fields: [actorId], references: [id])
+  action    String
+  targetId  String?
+  meta      Json?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
