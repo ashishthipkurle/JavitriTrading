@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { signIn, getSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -22,7 +22,6 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // Import here to avoid client component issues if not careful, though createClient is safe.
       const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
 
@@ -48,93 +47,84 @@ export default function LoginPage() {
     <div className="h-screen w-full flex flex-col md:flex-row overflow-hidden bg-surface-container-lowest">
       {/* Left Panel: Form Canvas */}
       <main className="w-full md:w-[60%] h-full flex flex-col justify-center items-center px-margin-mobile md:px-xl py-xl overflow-y-auto relative z-10">
-        {/* Mobile Logo (Visible only on mobile) */}
-        <div className="absolute top-margin-mobile left-margin-mobile md:hidden flex items-center gap-xs">
-          <span className="material-symbols-outlined text-primary-container text-[24px]">account_balance</span>
-          <span className="font-headline-sm text-headline-sm text-primary">Trader FD</span>
-        </div>
-        
-        <div className="w-full max-w-[420px] flex flex-col">
-          <header className="mb-lg">
-            <h1 className="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Welcome Back</h1>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-xs">Securely sign in to access your institutional dashboard.</p>
-          </header>
+        <div className="w-full max-w-[480px] flex flex-col items-center">
+          
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 animate-pulse-subtle">
+            <span className="material-symbols-outlined text-[40px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>shield_lock</span>
+          </div>
+
+          <div className="text-center mb-10 w-full">
+            <h1 className="text-headline-lg font-headline-lg text-on-surface tracking-tight mb-2">Welcome Back</h1>
+            <p className="text-body-lg font-body-lg text-on-surface-variant">Securely sign in to access your institutional dashboard.</p>
+          </div>
 
           {registered && (
-            <div className="mb-md p-sm bg-tertiary-container/10 border border-tertiary-container text-tertiary-container rounded-lg font-label-md">
-              Account created successfully! Please log in.
+            <div className="w-full bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-start gap-3">
+              <span className="material-symbols-outlined text-[20px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <p className="font-body-md text-body-md">Registration successful. Please log in with your credentials.</p>
             </div>
           )}
 
           {error && (
-            <div className="mb-md p-sm bg-error-container text-on-error-container rounded-lg font-label-md">
-              {error}
+            <div className="w-full bg-error-container text-on-error-container p-4 rounded-xl mb-6 flex items-start gap-3 animate-slideDown">
+              <span className="material-symbols-outlined text-[20px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>error</span>
+              <p className="font-body-md text-body-md">{error}</p>
             </div>
           )}
-          
-          <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
-            {/* Email Field */}
-            <div className="flex flex-col gap-base">
-              <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="email">Email Address</label>
-              <input 
-                className="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-[10px] font-body-md text-body-md text-on-surface outline-none transition-all focus:border-secondary-container focus:ring-2 focus:ring-secondary-container/20 placeholder:text-outline-variant" 
-                id="email" 
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@institution.com" 
-                required 
-                type="email"
-              />
-            </div>
-            
-            {/* Password Field */}
-            <div className="flex flex-col gap-base relative">
-              <div className="flex justify-between items-center">
-                <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="password">Password</label>
-                <Link className="font-label-md text-label-md text-secondary hover:text-secondary-container transition-colors" href="/forgot-password">
-                  Forgot Password?
-                </Link>
+
+          <form onSubmit={handleSubmit} className="w-full space-y-5">
+            <div className="space-y-1.5 group">
+              <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors block" htmlFor="email">Email Address</label>
+              <div className="relative">
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@institution.com"
+                  className="w-full bg-surface border border-outline-variant rounded-xl px-4 py-3.5 text-body-lg font-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                  required
+                />
               </div>
-              <div className="relative w-full">
-                <input 
-                  className="w-full bg-surface border border-outline-variant rounded-DEFAULT pl-sm pr-[40px] py-[10px] font-body-md text-body-md text-on-surface outline-none transition-all focus:border-secondary-container focus:ring-2 focus:ring-secondary-container/20 placeholder:text-outline-variant" 
-                  id="password" 
-                  name="password"
+            </div>
+
+            <div className="space-y-1.5 group">
+              <div className="flex justify-between items-center">
+                <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors" htmlFor="password">Password</label>
+                <Link href="/forgot-password" className="text-label-md font-label-md text-primary font-bold hover:underline transition-all">Forgot Password?</Link>
+              </div>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••" 
-                  required 
-                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="w-full bg-surface border border-outline-variant rounded-xl pl-4 pr-12 py-3.5 text-body-lg font-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                  required
                 />
-                <button 
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle password visibility" 
-                  className="absolute right-sm top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors focus:outline-none" 
+                <button
                   type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors focus:outline-none"
                 >
-                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>
-                    {showPassword ? "visibility_off" : "visibility"}
-                  </span>
+                  <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
                 </button>
               </div>
             </div>
-            
-            {/* Submit Action */}
-            <button disabled={isLoading} className="mt-xs w-full bg-primary-container text-surface-container-lowest rounded-xl py-[12px] px-md font-data-md text-data-md flex justify-center items-center gap-xs hover:bg-inverse-surface transition-colors duration-150 shadow-[0_4px_12px_rgba(16,28,46,0.12)] disabled:opacity-70" type="submit">
-              {isLoading ? "Logging in..." : "Login"}
-              {!isLoading && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-lg text-label-lg py-4 rounded-xl transition-all duration-200 mt-4 flex justify-center items-center gap-2 disabled:opacity-70 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"
+            >
+              {isLoading ? (
+                <span className="material-symbols-outlined animate-spin">progress_activity</span>
+              ) : (
+                <>Login <span className="material-symbols-outlined text-[20px]">arrow_forward</span></>
+              )}
             </button>
           </form>
-          
-          <div className="mt-lg text-center">
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              Don&apos;t have an institutional account?{" "}
-              <Link className="font-label-md text-label-md text-primary-container border-b border-primary-container hover:text-secondary-container hover:border-secondary-container transition-colors pb-[1px]" href="/register">
-                Sign Up
-              </Link>
-            </p>
-          </div>
         </div>
       </main>
       
@@ -175,5 +165,13 @@ export default function LoginPage() {
         </div>
       </aside>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-surface-container-lowest"><span className="material-symbols-outlined animate-spin text-[40px] text-primary">progress_activity</span></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

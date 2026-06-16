@@ -2,14 +2,15 @@
   "name": "tradepro-platform",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "npx ts-node --project tsconfig.seed.json prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
-  },
-  "prisma": {
-    "seed": "npx ts-node --project tsconfig.seed.json prisma/seed.ts"
+    "lint": "next lint",
+    "payouts": "npx ts-node --project tsconfig.seed.json scripts/generate-daily-payouts.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -27,6 +28,7 @@
     "lucide-react": "^1.17.0",
     "next": "14.2.35",
     "next-auth": "^4.24.14",
+    "nodemailer": "^7.0.13",
     "razorpay": "^2.9.6",
     "react": "^18",
     "react-dom": "^18",
@@ -41,6 +43,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

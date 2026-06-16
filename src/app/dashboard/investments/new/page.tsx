@@ -205,7 +205,7 @@ export default function NewInvestmentPage() {
             <div className="flex items-start gap-unit-sm max-w-[500px] mx-auto mt-unit-sm">
               <input checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="mt-1 rounded border-outline-variant text-primary focus:ring-primary cursor-pointer" id="terms" type="checkbox" />
               <label className="text-label-sm font-label-sm text-on-surface-variant cursor-pointer" htmlFor="terms">
-                I acknowledge that investments carry risk and confirm I have read the <Link className="text-primary underline" href="#">Risk Disclosure</Link> and <Link className="text-primary underline" href="#">Terms of Service</Link>.
+                I acknowledge that investments carry risk and confirm I have read the <Link className="text-primary underline" href="/terms">Risk Disclosure</Link> and <Link className="text-primary underline" href="/terms">Terms of Service</Link>.
               </label>
             </div>
             <div className="flex justify-between mt-unit-xl border-t border-outline-variant pt-unit-md max-w-[500px] mx-auto w-full">

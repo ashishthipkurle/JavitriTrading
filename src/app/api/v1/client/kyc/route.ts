@@ -16,9 +16,9 @@ export async function GET() {
       success: true,
       data: {
         ...kyc,
-        panNumber: decrypt(kyc.panNumber),
-        aadhaarNumber: decrypt(kyc.aadhaarNumber),
-        bankAccount: decrypt(kyc.bankAccount),
+        panNumber: kyc.panNumber ? decrypt(kyc.panNumber) : null,
+        aadhaarNumber: kyc.aadhaarNumber ? decrypt(kyc.aadhaarNumber) : null,
+        bankAccount: kyc.bankAccount ? decrypt(kyc.bankAccount) : null,
       }
     });
   } catch (error) {

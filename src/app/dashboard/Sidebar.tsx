@@ -11,8 +11,6 @@ export default function Sidebar() {
     { href: '/dashboard/wallet', icon: 'account_balance_wallet', label: 'Wallet' },
     { href: '/dashboard/investments', icon: 'trending_up', label: 'Investments' },
     { href: '/dashboard/earnings', icon: 'payments', label: 'Earnings' },
-    { href: '/dashboard/notifications', icon: 'notifications', label: 'Notifications' },
-    { href: '/dashboard/profile', icon: 'person', label: 'Profile' },
   ];
 
   return (
@@ -45,19 +43,15 @@ export default function Sidebar() {
       </div>
 
       <div className="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-2">
-        <Link href="/settings" className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg">
+        <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg">
           <span className="material-symbols-outlined">settings</span>
           <span className="text-label-md font-label-md">Settings</span>
         </Link>
-        <Link href="/support" className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg">
+        <Link href="/dashboard/support" className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg">
           <span className="material-symbols-outlined">help</span>
           <span className="text-label-md font-label-md">Support</span>
         </Link>
       </div>
-      
-      <Link href="/dashboard/investments/new" className="mt-4 w-full bg-primary text-on-primary font-bold text-label-md font-label-md py-3 rounded-lg hover:opacity-90 transition-opacity text-center block">
-        Invest Now
-      </Link>
     </nav>
   );
 }

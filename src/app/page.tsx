@@ -22,17 +22,39 @@ export default async function LandingPage() {
     return content ? content.value : defaultValue;
   };
 
-  // Fetch FD Plans
-  // Using hardcoded plans to match the poster design
-  let fdPlans: any[] = [
-    { id: '1', name: '₹5k PLAN', monthlyReturnPercent: 200, minAmount: 5000, tenureMonths: 30, description: 'Referral Bonus Available' },
-    { id: '2', name: '₹10k PLAN', monthlyReturnPercent: 500, minAmount: 10000, tenureMonths: 30, description: 'Beginner Friendly Plan' },
-    { id: '3', name: '₹20k PLAN', monthlyReturnPercent: 1100, minAmount: 20000, tenureMonths: 30, description: 'Strong Growth Potential' },
-    { id: '4', name: '₹30k PLAN', monthlyReturnPercent: 1700, minAmount: 30000, tenureMonths: 30, description: 'Advanced Income Plan' },
-    { id: '5', name: '₹50k PLAN', monthlyReturnPercent: 2800, minAmount: 50000, tenureMonths: 30, description: 'Premium Investor Plan' },
-    { id: '6', name: '₹80k PLAN', monthlyReturnPercent: 4500, minAmount: 80000, tenureMonths: 30, description: 'High Performance Portfolio' },
-    { id: '7', name: '₹1L PLAN', monthlyReturnPercent: 6000, minAmount: 100000, tenureMonths: 30, description: 'Elite Wealth Growth Plan' },
-  ];
+  // Fetch FD Plans from the database, with fallback defaults
+  let fdPlans: any[] = [];
+  try {
+    const dbPlans = await prisma.fDPlan.findMany({
+      where: { isActive: true },
+      orderBy: { amount: 'asc' },
+    });
+    if (dbPlans.length > 0) {
+      fdPlans = dbPlans.map(p => ({
+        id: p.id,
+        name: p.name,
+        dailyReturnAmount: Number(p.dailyReturnAmount),
+        amount: Number(p.amount),
+        tagline: p.tagline,
+        description: p.description,
+      }));
+    }
+  } catch (e) {
+    console.log("Could not fetch FD plans from database. Using defaults.");
+  }
+
+  // Fallback if no plans in DB
+  if (fdPlans.length === 0) {
+    fdPlans = [
+      { id: '1', name: '₹5k PLAN', dailyReturnAmount: 200, amount: 5000, tagline: 'Referral Bonus Available', description: 'Referral Bonus Available' },
+      { id: '2', name: '₹10k PLAN', dailyReturnAmount: 500, amount: 10000, tagline: 'Beginner Friendly Plan', description: 'Beginner Friendly Plan' },
+      { id: '3', name: '₹20k PLAN', dailyReturnAmount: 1100, amount: 20000, tagline: 'Strong Growth Potential', description: 'Strong Growth Potential' },
+      { id: '4', name: '₹30k PLAN', dailyReturnAmount: 1700, amount: 30000, tagline: 'Advanced Income Plan', description: 'Advanced Income Plan' },
+      { id: '5', name: '₹50k PLAN', dailyReturnAmount: 2800, amount: 50000, tagline: 'Premium Investor Plan', description: 'Premium Investor Plan' },
+      { id: '6', name: '₹80k PLAN', dailyReturnAmount: 4500, amount: 80000, tagline: 'High Performance Portfolio', description: 'High Performance Portfolio' },
+      { id: '7', name: '₹1L PLAN', dailyReturnAmount: 6000, amount: 100000, tagline: 'Elite Wealth Growth Plan', description: 'Elite Wealth Growth Plan' },
+    ];
+  }
 
   return (
     <div className="bg-surface text-on-surface min-h-screen flex flex-col pt-16">

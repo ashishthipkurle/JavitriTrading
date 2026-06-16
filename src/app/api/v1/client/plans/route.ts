@@ -12,7 +12,7 @@ export async function GET() {
 
     const plans = await prisma.fDPlan.findMany({
       where: { isActive: true },
-      orderBy: { minAmount: 'asc' }
+      orderBy: { amount: 'asc' }
     });
 
     return NextResponse.json({ success: true, data: plans });

@@ -1,4 +1,22 @@
-export default function AdminWithdrawalsPage() {
+import prisma from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminWithdrawalsPage() {
+  const withdrawals = await prisma.withdrawalRequest.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      user: {
+        include: {
+          kyc: true,
+        }
+      }
+    }
+  });
+
+  const pendingCount = withdrawals.filter(w => w.status === "PENDING").length;
+  const processingCount = withdrawals.filter(w => w.status === "PROCESSING").length;
+
   return (
     <>
       {/* Page Header */}
@@ -19,10 +37,10 @@ export default function AdminWithdrawalsPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-unit-md border-b border-outline-variant pb-unit-sm">
         <div className="flex gap-6 w-full overflow-x-auto no-scrollbar">
           <button className="text-label-md font-label-md text-primary border-b-2 border-primary pb-2 whitespace-nowrap px-1">
-            Pending (12)
+            Pending ({pendingCount})
           </button>
           <button className="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-2 whitespace-nowrap px-1 border-b-2 border-transparent">
-            Processing (5)
+            Processing ({processingCount})
           </button>
           <button className="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-2 whitespace-nowrap px-1 border-b-2 border-transparent">
             Completed
@@ -51,113 +69,94 @@ export default function AdminWithdrawalsPage() {
                 <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Req ID</th>
                 <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">User Details</th>
                 <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider text-right">Amount</th>
-                <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Bank Route</th>
+                <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Status & Bank</th>
                 <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Date Requested</th>
                 <th className="px-unit-md py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant">
-              <tr className="hover:bg-surface-container-low transition-colors group h-[64px]">
-                <td className="px-unit-md text-data-mono font-data-mono text-on-surface-variant">#WD-8924</td>
-                <td className="px-unit-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center text-label-sm font-label-sm font-bold">JD</div>
-                    <div>
-                      <p className="text-label-md font-label-md text-primary">Jonathan Doe</p>
-                      <p className="text-label-sm font-label-sm text-on-surface-variant">jonathan.d@example.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-unit-md text-right text-data-mono font-data-mono text-primary font-semibold">₹1,25,000</td>
-                <td className="px-unit-md">
-                  <p className="text-body-sm font-body-sm text-primary">HDFC Bank</p>
-                  <p className="text-label-sm font-label-sm text-on-surface-variant">**** 4592</p>
-                </td>
-                <td className="px-unit-md text-body-sm font-body-sm text-on-surface-variant">Oct 24, 09:15 AM</td>
-                <td className="px-unit-md text-right">
-                  <div className="flex justify-end gap-2">
-                    <button className="w-8 h-8 rounded flex items-center justify-center text-error hover:bg-error-container transition-colors" title="Reject">
-                      <span className="material-symbols-outlined text-[20px]">close</span>
-                    </button>
-                    <button className="w-8 h-8 rounded flex items-center justify-center text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/20 transition-colors" title="Approve">
-                      <span className="material-symbols-outlined text-[20px]">check</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr className="hover:bg-surface-container-low transition-colors group h-[64px]">
-                <td className="px-unit-md text-data-mono font-data-mono text-on-surface-variant">#WD-8923</td>
-                <td className="px-unit-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-container flex items-center justify-center text-label-sm font-label-sm font-bold">SW</div>
-                    <div>
-                      <p className="text-label-md font-label-md text-primary">Sarah Williams</p>
-                      <p className="text-label-sm font-label-sm text-on-surface-variant">s.williams@corp.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-unit-md text-right text-data-mono font-data-mono text-primary font-semibold">₹32,000</td>
-                <td className="px-unit-md">
-                  <p className="text-body-sm font-body-sm text-primary">ICICI Bank</p>
-                  <p className="text-label-sm font-label-sm text-on-surface-variant">**** 8812</p>
-                </td>
-                <td className="px-unit-md text-body-sm font-body-sm text-on-surface-variant">Oct 24, 08:42 AM</td>
-                <td className="px-unit-md text-right">
-                  <div className="flex justify-end gap-2">
-                    <button className="w-8 h-8 rounded flex items-center justify-center text-error hover:bg-error-container transition-colors" title="Reject">
-                      <span className="material-symbols-outlined text-[20px]">close</span>
-                    </button>
-                    <button className="w-8 h-8 rounded flex items-center justify-center text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/20 transition-colors" title="Approve">
-                      <span className="material-symbols-outlined text-[20px]">check</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr className="hover:bg-surface-container-low transition-colors group h-[64px]">
-                <td className="px-unit-md text-data-mono font-data-mono text-on-surface-variant">#WD-8921</td>
-                <td className="px-unit-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-surface-tint text-on-primary flex items-center justify-center text-label-sm font-label-sm font-bold">MC</div>
-                    <div>
-                      <p className="text-label-md font-label-md text-primary">Michael Chen</p>
-                      <p className="text-label-sm font-label-sm text-on-surface-variant">mchen.invest@web.net</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-unit-md text-right text-data-mono font-data-mono text-primary font-semibold">₹4,50,000</td>
-                <td className="px-unit-md">
-                  <p className="text-body-sm font-body-sm text-primary">Axis Bank</p>
-                  <p className="text-label-sm font-label-sm text-on-surface-variant">**** 1109</p>
-                </td>
-                <td className="px-unit-md text-body-sm font-body-sm text-on-surface-variant">Oct 23, 16:20 PM</td>
-                <td className="px-unit-md text-right">
-                  <div className="flex justify-end gap-2">
-                    <button className="w-8 h-8 rounded flex items-center justify-center text-error hover:bg-error-container transition-colors" title="Reject">
-                      <span className="material-symbols-outlined text-[20px]">close</span>
-                    </button>
-                    <button className="w-8 h-8 rounded flex items-center justify-center text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/20 transition-colors" title="Approve">
-                      <span className="material-symbols-outlined text-[20px]">check</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              {withdrawals.map((req) => {
+                const user = req.user;
+                const initials = (user.name || user.email || "U").substring(0, 2).toUpperCase();
+
+                let statusColor = "bg-secondary-container/20 text-on-secondary-container";
+                if (req.status === "COMPLETED") statusColor = "bg-[#009668]/10 text-[#005236]";
+                if (req.status === "FAILED") statusColor = "bg-[#ba1a1a]/10 text-[#93000a]";
+
+                return (
+                  <tr key={req.id} className="hover:bg-surface-container-low transition-colors group h-[64px]">
+                    <td className="px-unit-md text-data-mono font-data-mono text-on-surface-variant">
+                      #WD-{req.id.slice(-4).toUpperCase()}
+                    </td>
+                    <td className="px-unit-md">
+                      <div className="flex items-center gap-3 py-2">
+                        <div className="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center text-label-sm font-label-sm font-bold">
+                          {initials}
+                        </div>
+                        <div>
+                          <p className="text-label-md font-label-md text-primary">{user.name || "Unknown User"}</p>
+                          <p className="text-label-sm font-label-sm text-on-surface-variant">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-unit-md text-right text-data-mono font-data-mono text-primary font-semibold">
+                      {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(req.amount))}
+                    </td>
+                    <td className="px-unit-md">
+                      <p className="text-body-sm font-body-sm text-primary flex items-center gap-1">
+                        <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${statusColor}`}>
+                          {req.status}
+                        </span>
+                      </p>
+                      <p className="text-label-sm font-label-sm text-on-surface-variant mt-0.5">
+                        IFSC: {user.kyc?.ifsc || "Not provided"}
+                      </p>
+                    </td>
+                    <td className="px-unit-md text-body-sm font-body-sm text-on-surface-variant">
+                      {new Date(req.createdAt).toLocaleString('en-IN', {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                      })}
+                    </td>
+                    <td className="px-unit-md text-right">
+                      <div className="flex justify-end gap-2">
+                        <button disabled={req.status !== "PENDING"} className="w-8 h-8 rounded flex items-center justify-center text-error hover:bg-error-container transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Reject">
+                          <span className="material-symbols-outlined text-[20px]">close</span>
+                        </button>
+                        <button disabled={req.status !== "PENDING"} className="w-8 h-8 rounded flex items-center justify-center text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/20 transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Approve">
+                          <span className="material-symbols-outlined text-[20px]">check</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {withdrawals.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-on-surface-variant">
+                    No withdrawal requests found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
+        
         {/* Pagination */}
-        <div className="border-t border-outline-variant p-4 flex items-center justify-between bg-surface-container-lowest">
-          <span className="text-body-sm font-body-sm text-on-surface-variant">Showing 1-3 of 12</span>
-          <div className="flex gap-1">
-            <button className="w-8 h-8 rounded flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-low disabled:opacity-50" disabled>
-              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-            </button>
-            <button className="w-8 h-8 rounded flex items-center justify-center border border-primary bg-primary text-on-primary text-label-sm font-label-sm">1</button>
-            <button className="w-8 h-8 rounded flex items-center justify-center border border-outline-variant text-primary text-label-sm font-label-sm hover:bg-surface-container-low">2</button>
-            <button className="w-8 h-8 rounded flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-low">
-              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-            </button>
+        {withdrawals.length > 0 && (
+          <div className="border-t border-outline-variant p-4 flex items-center justify-between bg-surface-container-lowest">
+            <span className="text-body-sm font-body-sm text-on-surface-variant">Showing all {withdrawals.length}</span>
+            <div className="flex gap-1 opacity-50 pointer-events-none">
+              <button className="w-8 h-8 rounded flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-low" disabled>
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+              <button className="w-8 h-8 rounded flex items-center justify-center border border-primary bg-primary text-on-primary text-label-sm font-label-sm">1</button>
+              <button className="w-8 h-8 rounded flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-low">
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

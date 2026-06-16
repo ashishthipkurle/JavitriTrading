@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { addMonths } from 'date-fns';
 
 export async function POST(req: Request) {
   try {
@@ -15,10 +14,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'KYC must be approved to invest' }, { status: 403 });
     }
 
-    const { planId, amount } = await req.json();
+    const { planId, tenureDays } = await req.json();
 
-    if (!planId || !amount || amount <= 0) {
-      return NextResponse.json({ error: 'Invalid investment details' }, { status: 400 });
+    if (!planId || !tenureDays || tenureDays <= 0) {
+      return NextResponse.json({ error: 'Invalid investment details. Plan and tenure are required.' }, { status: 400 });
     }
 
     // Use a transaction to ensure wallet balance deduction and investment creation are atomic
@@ -28,9 +27,7 @@ export async function POST(req: Request) {
         throw new Error('Plan not found or inactive');
       }
 
-      if (amount < Number(plan.minAmount) || amount > Number(plan.maxAmount)) {
-        throw new Error(`Amount must be between ₹${plan.minAmount} and ₹${plan.maxAmount}`);
-      }
+      const amount = Number(plan.amount);
 
       const currentUser = await tx.user.findUnique({ where: { id: user.id } });
       if (Number(currentUser?.walletBalance) < amount) {
@@ -45,8 +42,9 @@ export async function POST(req: Request) {
 
       // Calculate dates and returns
       const startDate = new Date();
-      const maturityDate = addMonths(startDate, plan.tenureMonths);
-      const monthlyReturn = (amount * Number(plan.monthlyReturnPercent)) / 100;
+      const maturityDate = new Date(startDate);
+      maturityDate.setDate(maturityDate.getDate() + tenureDays);
+      const dailyReturn = Number(plan.dailyReturnAmount);
 
       // Create investment
       const investment = await tx.investment.create({
@@ -57,7 +55,7 @@ export async function POST(req: Request) {
           amount,
           startDate,
           maturityDate,
-          monthlyReturn,
+          monthlyReturn: dailyReturn, // storing daily return in this field
           status: 'ACTIVE',
         }
       });
@@ -69,7 +67,7 @@ export async function POST(req: Request) {
           type: 'INVESTMENT',
           amount,
           status: 'SUCCESS',
-          meta: { investmentId: investment.id, planName: plan.name }
+          meta: { investmentId: investment.id, planName: plan.name, tenureDays }
         }
       });
 

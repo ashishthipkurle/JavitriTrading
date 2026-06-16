@@ -29,6 +29,7 @@ model User {
   withdrawals       WithdrawalRequest[]
   commissionsEarned Commission[]        @relation("EmployeeCommissions")
   auditLogs         AuditLog[]
+  supportTickets    SupportTicket[]
 }
 
 enum Role {
@@ -52,8 +53,8 @@ model KYC {
   id            String   @id @default(cuid())
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id])
-  panNumber     String // AES-256-GCM encrypted
-  aadhaarNumber String // AES-256-GCM encrypted
+  panNumber     String? // AES-256-GCM encrypted
+  aadhaarNumber String? // AES-256-GCM encrypted
   bankAccount   String // AES-256-GCM encrypted
   ifsc          String
   panDocUrl     String?
@@ -63,16 +64,15 @@ model KYC {
 }
 
 model FDPlan {
-  id                   String       @id @default(cuid())
-  name                 String
-  description          String
-  minAmount            Decimal      @db.Decimal(14, 2)
-  maxAmount            Decimal      @db.Decimal(14, 2)
-  tenureMonths         Int
-  monthlyReturnPercent Decimal      @db.Decimal(5, 2)
-  isActive             Boolean      @default(true)
-  createdAt            DateTime     @default(now())
-  investments          Investment[]
+  id                String       @id @default(cuid())
+  name              String
+  description       String
+  tagline           String       @default("")
+  amount            Decimal      @db.Decimal(14, 2)
+  dailyReturnAmount Decimal      @db.Decimal(14, 2)
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  investments       Investment[]
 }
 
 model Investment {
@@ -239,4 +239,31 @@ model AuditLog {
   targetId  String?
   meta      Json?
   createdAt DateTime @default(now())
+}
+
+model SupportTicket {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  subject   String
+  message   String   @db.Text
+  status    TicketStatus @default(OPEN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model OTPToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, token])
 }

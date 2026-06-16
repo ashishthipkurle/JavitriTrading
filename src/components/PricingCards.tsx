@@ -6,9 +6,9 @@ import Link from 'next/link';
 interface Plan {
   id: string;
   name: string;
-  monthlyReturnPercent: number;
-  minAmount: number;
-  tenureMonths: number;
+  dailyReturnAmount: number;
+  amount: number;
+  tagline: string;
   description: string;
 }
 
@@ -74,23 +74,23 @@ export default function PricingCards({ plans }: { plans: Plan[] }) {
               <div className={`mb-sm ${isActive ? 'mt-2' : ''}`}>
                 <h3 className="text-headline-sm font-headline-sm text-on-surface">{plan.name}</h3>
                 <p className="text-body-sm font-body-sm text-on-surface-variant mt-1">
-                  {plan.description}
+                  {plan.tagline || plan.description}
                 </p>
               </div>
 
               <div className="text-headline-md font-headline-md text-primary-container mb-md">
-                ₹{plan.monthlyReturnPercent.toLocaleString()}+{' '}
+                ₹{plan.dailyReturnAmount.toLocaleString()}+{' '}
                 <span className="text-body-sm font-body-sm text-on-surface-variant font-normal">/ day</span>
               </div>
 
               <ul className="space-y-xs mb-lg flex-grow">
                 <li className="flex items-center gap-xs text-body-sm font-body-sm text-on-surface">
                   <span className={`material-symbols-outlined text-[16px] ${isActive ? 'text-secondary-container' : 'text-outline'}`}>done</span>
-                  Investment: ₹{plan.minAmount.toLocaleString()}
+                  Investment: ₹{plan.amount.toLocaleString()}
                 </li>
                 <li className="flex items-center gap-xs text-body-sm font-body-sm text-on-surface">
                   <span className={`material-symbols-outlined text-[16px] ${isActive ? 'text-secondary-container' : 'text-outline'}`}>done</span>
-                  {plan.tenureMonths}-Day Lock-in
+                  Flexible Tenure
                 </li>
                 <li className="flex items-center gap-xs text-body-sm font-body-sm text-on-surface">
                   <span className={`material-symbols-outlined text-[16px] ${isActive ? 'text-secondary-container' : 'text-outline'}`}>done</span>

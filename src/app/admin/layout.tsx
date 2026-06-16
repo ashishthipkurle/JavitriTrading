@@ -1,11 +1,27 @@
 import Link from 'next/link';
 import AdminSidebar from './AdminSidebar';
+import { getAuthUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getAuthUser();
+
+  // Only ADMIN role can access admin pages
+  if (!user) {
+    redirect("/login");
+  }
+  if (user.role !== "ADMIN") {
+    // Redirect non-admins to their appropriate dashboard
+    if (user.role === "EMPLOYEE") {
+      redirect("/employee");
+    }
+    redirect("/dashboard");
+  }
+
   return (
     <div className="bg-surface text-on-surface font-body-md antialiased flex min-h-screen">
       <AdminSidebar />
