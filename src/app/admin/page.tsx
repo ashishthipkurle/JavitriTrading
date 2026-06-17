@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { InvestmentStatus, KYCStatus, PayoutStatus, TransactionType, TxStatus } from "@prisma/client";
+import RunPayoutsButton from "./RunPayoutsButton";
 
 function formatCurrency(amount: number) {
   if (amount >= 10000000) {
@@ -64,6 +65,14 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <>
+      <div className="flex justify-between items-center mb-unit-lg">
+        <div>
+          <h1 className="text-headline-lg font-headline-lg text-primary">Overview</h1>
+          <p className="text-body-md text-on-surface-variant mt-1">Platform analytics and administrative actions.</p>
+        </div>
+        <RunPayoutsButton />
+      </div>
+
       {/* Stat Cards Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
         <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-unit-md flex flex-col gap-unit-sm hover:shadow-[0px_4px_12px_rgba(10,22,40,0.04)] transition-shadow">

@@ -62,7 +62,7 @@ export default async function LandingPage() {
       <header className="bg-surface text-primary border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-sm md:px-md h-16">
         <div className="max-w-container-max mx-auto w-full flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-headline-md font-headline-md font-bold text-primary">Trader FD Scheme</span>
+            <span className="text-headline-md font-headline-md font-bold text-primary">Javitri Trading</span>
           </div>
           <nav className="hidden md:flex space-x-md h-16">
             {/* Active Navigation Item (Home) */}
@@ -339,7 +339,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-lg">
             {/* Company Info */}
             <div className="md:col-span-1 space-y-md">
-              <span className="text-headline-md font-headline-md font-bold text-on-primary-container block">Trader FD Scheme</span>
+              <span className="text-headline-md font-headline-md font-bold text-on-primary-container block">Javitri Trading</span>
               <p className="text-body-sm font-body-sm opacity-70 leading-relaxed">
                 India&apos;s trusted platform for expert trading signals and fixed-return investment plans. Grow your wealth with confidence.
               </p>
@@ -389,7 +389,7 @@ export default async function LandingPage() {
               <div className="space-y-sm">
                 <div className="flex items-start gap-xs">
                   <span className="material-symbols-outlined text-[18px] text-secondary-container mt-0.5">mail</span>
-                  <span className="text-body-sm font-body-sm opacity-70">support@traderfdscheme.com</span>
+                  <span className="text-body-sm font-body-sm opacity-70">support@javitritrading.com</span>
                 </div>
                 <div className="flex items-start gap-xs">
                   <span className="material-symbols-outlined text-[18px] text-secondary-container mt-0.5">schedule</span>
@@ -407,7 +407,7 @@ export default async function LandingPage() {
         {/* Bottom Bar */}
         <div className="border-t border-on-primary-container/10">
           <div className="max-w-container-max mx-auto px-sm md:px-md py-md flex flex-col md:flex-row justify-between items-center gap-xs">
-            <span className="text-body-sm font-body-sm opacity-50">© {new Date().getFullYear()} Trader FD Scheme. All rights reserved.</span>
+            <span className="text-body-sm font-body-sm opacity-50">© {new Date().getFullYear()} Javitri Trading. All rights reserved.</span>
             <span className="text-body-sm font-body-sm opacity-50">Made with <span className="text-secondary-container">♥</span> in India</span>
           </div>
         </div>

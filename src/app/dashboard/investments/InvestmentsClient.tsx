@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import StopFDButton from './StopFDButton';
 
 export default function InvestmentsClient({ investments }: { investments: any[] }) {
   const [filter, setFilter] = useState('All'); // 'All', 'Active', 'Matured'
@@ -95,7 +96,7 @@ export default function InvestmentsClient({ investments }: { investments: any[] 
                 </div>
               </div>
               <div className="flex gap-3 mt-auto pt-4 border-t border-outline-variant/50">
-                <button className="flex-1 py-2 text-primary border border-primary rounded-lg text-label-sm font-label-sm font-bold hover:bg-primary/5 transition-colors">Top Up</button>
+                <StopFDButton investmentId={inv.id} isActive={inv.status === 'ACTIVE'} />
                 <Link href={`/dashboard/investments/${inv.id}`} className="flex-1 py-2 text-center text-on-surface-variant hover:text-primary bg-surface-container-low rounded-lg text-label-sm font-label-sm transition-colors">View Details</Link>
               </div>
             </div>

@@ -86,14 +86,16 @@ export default async function AdminInvestmentsPage() {
 
               {investments.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-12 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mb-4 mt-6">
-                      <span className="material-symbols-outlined text-4xl text-outline">trending_up</span>
+                  <td colSpan={6} className="p-12 text-center align-middle">
+                    <div className="flex flex-col items-center justify-center mx-auto">
+                      <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mb-4">
+                        <span className="material-symbols-outlined text-4xl text-outline">trending_up</span>
+                      </div>
+                      <h2 className="text-headline-sm font-headline-sm text-on-surface mb-2">No Investments Yet</h2>
+                      <p className="text-body-md font-body-md text-on-surface-variant max-w-md">
+                        There are currently no active investments in the database. When users invest in an FD Plan, they will appear here.
+                      </p>
                     </div>
-                    <h2 className="text-headline-sm font-headline-sm text-on-surface mb-2">No Investments Yet</h2>
-                    <p className="text-body-md font-body-md text-on-surface-variant max-w-md">
-                      There are currently no active investments in the database. When users invest in an FD Plan, they will appear here.
-                    </p>
                   </td>
                 </tr>
               )}

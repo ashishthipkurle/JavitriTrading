@@ -140,7 +140,7 @@ function LoginForm() {
           <div className="w-[32px] h-[32px] rounded-DEFAULT bg-secondary-container flex items-center justify-center">
             <span className="material-symbols-outlined text-on-secondary-container text-[20px]">account_balance</span>
           </div>
-          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Trader FD</span>
+          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Javitri Trading</span>
         </div>
         
         <div className="relative z-10 mb-xl max-w-[80%]">

@@ -224,7 +224,7 @@ async function main() {
   // --- Site Settings ---
   await prisma.siteSettings.createMany({
     data: [
-      { key: 'contact_email', value: 'support@traderfdscheme.com' },
+      { key: 'contact_email', value: 'support@javitritrading.com' },
       { key: 'contact_phone', value: '+91-9000000000' },
       { key: 'telegram_url', value: 'https://t.me/Javitritradingservice' },
       { key: 'office_address', value: 'Mumbai, Maharashtra, India' },
