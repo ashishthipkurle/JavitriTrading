@@ -5,6 +5,8 @@ import { getAuthUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PinGate } from "@/components/PinGate";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {
