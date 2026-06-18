@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 
 export const metadata = {
   title: 'Terms of Service | ProWealth Advisory',
@@ -14,9 +15,7 @@ export default function TermsPage() {
           <Link href="/" className="text-headline-sm font-headline-sm font-bold text-primary">
             ProWealth Advisory
           </Link>
-          <Link href="/register" className="text-label-md font-label-md text-primary hover:underline">
-            Back to Sign Up
-          </Link>
+          <BackButton fallback="/dashboard" />
         </div>
       </header>
 
@@ -31,7 +30,7 @@ export default function TermsPage() {
           <section className="mb-8">
             <h2 className="text-title-lg font-title-lg text-primary mb-3">1. Agreement to Terms</h2>
             <p className="text-body-md font-body-md mb-4 leading-relaxed text-on-surface-variant">
-              By accessing or using the services provided by ProWealth Advisory ("we," "us," or "our"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, then you may not access our services.
+              By accessing or using the services provided by ProWealth Advisory (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, then you may not access our services.
             </p>
           </section>
 

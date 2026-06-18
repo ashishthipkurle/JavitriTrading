@@ -1,12 +1,10 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { usePathname } from 'next/navigation';
 
 export default function EmployeeSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
 
   const navItems = [
     { href: '/employee', icon: 'analytics', label: 'Dashboard' },
@@ -15,30 +13,15 @@ export default function EmployeeSidebar() {
     { href: '/employee/commissions', icon: 'payments', label: 'Commissions' },
   ];
 
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
-  };
-
   return (
     <aside className="fixed left-0 top-0 h-full w-[260px] z-40 bg-surface-container-lowest border-r border-outline-variant flex flex-col p-unit-md gap-unit-sm hidden md:flex">
       
       {/* Header */}
-      <div className="flex items-center justify-between mb-unit-lg px-unit-sm">
-        <div className="flex items-center gap-unit-sm">
-          <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-headline-sm">
-            E
-          </div>
-          <div>
-            <h2 className="text-headline-sm font-headline-sm font-bold text-primary">Workspace</h2>
-            <p className="text-label-sm font-label-sm text-on-surface-variant">Employee</p>
-          </div>
+      <div className="flex items-center mb-unit-lg px-unit-sm">
+        <div>
+          <h2 className="text-headline-sm font-headline-sm font-bold text-primary">Workspace</h2>
+          <p className="text-label-sm font-label-sm text-on-surface-variant">Employee</p>
         </div>
-        <button onClick={handleSignOut} className="text-on-surface-variant hover:text-error transition-colors" title="Log Out">
-          <span className="material-symbols-outlined text-[20px]">logout</span>
-        </button>
       </div>
 
       {/* Navigation Links */}

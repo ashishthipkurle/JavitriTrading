@@ -4,10 +4,6 @@ import prisma from "@/lib/prisma";
 import { getAuthUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import bcrypt from "bcryptjs";
-
-import { encrypt } from "@/lib/encryption";
-import { verifyBankAccount } from "@/lib/bank-validation";
 
 export async function createClientAccountByEmployee(data: any) {
   try {
@@ -16,8 +12,8 @@ export async function createClientAccountByEmployee(data: any) {
       throw new Error("Unauthorized: Employee access required");
     }
 
-    const { name, email, phone, password, bankAccount, ifsc, panDocUrl, aadhaarDocUrl } = data;
-    if (!name || !email || !phone || !password || !bankAccount || !ifsc || !panDocUrl || !aadhaarDocUrl) {
+    const { name, email, phone, password, panDocUrl, aadhaarDocUrl } = data;
+    if (!name || !email || !phone || !password || !panDocUrl || !aadhaarDocUrl) {
       throw new Error("Missing required fields including KYC details");
     }
 
@@ -35,8 +31,6 @@ export async function createClientAccountByEmployee(data: any) {
       throw new Error("User with this email or phone already exists");
     }
 
-    // VERIFY BANK ACCOUNT INSTANTLY
-    await verifyBankAccount(bankAccount, ifsc, name);
 
     // Create user in Supabase Auth via Admin API
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -66,15 +60,10 @@ export async function createClientAccountByEmployee(data: any) {
         }
       });
 
-      // Encrypt sensitive KYC fields
-      const encBankAccount = encrypt(bankAccount);
-
       // Create KYC record
       await tx.kYC.create({
         data: {
           userId: user.id,
-          bankAccount: encBankAccount,
-          ifsc: ifsc,
           panDocUrl: panDocUrl,
           aadhaarDocUrl: aadhaarDocUrl
         }

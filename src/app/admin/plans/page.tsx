@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPlansPage() {
   const plans = await prisma.fDPlan.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { amount: "asc" },
   });
 
   return (

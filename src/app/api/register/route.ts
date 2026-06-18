@@ -28,6 +28,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User with this email or phone already exists" }, { status: 400 });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const passwordHash = await bcrypt.hash(password, 10);
 
     await prisma.user.create({

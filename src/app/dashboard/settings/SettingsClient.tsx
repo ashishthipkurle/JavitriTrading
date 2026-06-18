@@ -173,90 +173,170 @@ export default function SettingsClient({ user }: { user: any }) {
           )}
 
           {activeTab === 'security' && (
-            <div className="flex flex-col gap-6 max-w-lg">
-              <div>
-                <h2 className="text-headline-sm font-headline-sm text-primary mb-1">Change Password</h2>
-                <p className="text-body-sm font-body-sm text-on-surface-variant">Ensure your account is using a long, random password to stay secure.</p>
+            <div className="flex flex-col gap-10 max-w-lg">
+              
+              {/* Change PIN Section */}
+              <div className="border-b border-outline-variant pb-10">
+                <div className="mb-6">
+                  <h2 className="text-headline-sm font-headline-sm text-primary mb-1">Change PIN</h2>
+                  <p className="text-body-sm font-body-sm text-on-surface-variant">Update your 6-digit dashboard access PIN.</p>
+                </div>
+
+                {!otpSent ? (
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (tempPassword.length !== 6 || !/^\d+$/.test(tempPassword)) {
+                      setMessage({ text: 'PIN must be exactly 6 digits', type: 'error' });
+                      return;
+                    }
+                    if (tempPassword !== tempConfirm) {
+                      setMessage({ text: 'PINs do not match', type: 'error' });
+                      return;
+                    }
+                    setIsLoading(true);
+                    setMessage(null);
+                    
+                    try {
+                      const res = await fetch('/api/v1/auth/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: user.email })
+                      });
+                      if (!res.ok) {
+                        const data = await res.json();
+                        setMessage({ text: data.error || 'Failed to send OTP', type: 'error' });
+                      } else {
+                        setOtpSent(true);
+                        setMessage({ text: `A 6-digit verification code has been sent to ${user.email}.`, type: 'success' });
+                      }
+                    } catch (err) {
+                      setMessage({ text: 'An unexpected error occurred', type: 'error' });
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }} className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-label-sm font-label-sm text-on-surface-variant">New 6-Digit PIN</label>
+                      <input 
+                        type="password" 
+                        value={tempPassword}
+                        onChange={(e) => setTempPassword(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all tracking-[0.5em] font-mono text-center"
+                        required 
+                        maxLength={6}
+                        inputMode="numeric"
+                        placeholder="••••••"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-label-sm font-label-sm text-on-surface-variant">Confirm New PIN</label>
+                      <input 
+                        type="password" 
+                        value={tempConfirm}
+                        onChange={(e) => setTempConfirm(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all tracking-[0.5em] font-mono text-center"
+                        required 
+                        maxLength={6}
+                        inputMode="numeric"
+                        placeholder="••••••"
+                      />
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      disabled={isLoading}
+                      className="mt-2 bg-primary text-on-primary h-12 rounded-lg text-label-md font-label-md font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isLoading ? 'Sending...' : (
+                        <>
+                          <span className="material-symbols-outlined text-[18px]">mail</span> Send OTP
+                        </>
+                      )}
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsLoading(true);
+                    setMessage(null);
+                    
+                    const otpInput = (e.currentTarget.elements.namedItem('otp') as HTMLInputElement).value;
+                    
+                    try {
+                      const res = await fetch('/api/v1/auth/setup-pin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pin: tempPassword, otp: otpInput }),
+                      });
+                      
+                      if (!res.ok) {
+                        const data = await res.json();
+                        setMessage({ text: data.error || 'Failed to update PIN', type: 'error' });
+                      } else {
+                        setMessage({ text: 'PIN updated successfully.', type: 'success' });
+                        setOtpSent(false);
+                        setTempPassword('');
+                        setTempConfirm('');
+                        (e.target as HTMLFormElement).reset();
+                        // Reset lock state so dashboard doesn't ask for old PIN
+                        sessionStorage.setItem('pinUnlocked', 'true');
+                        sessionStorage.setItem('lastActiveTime', Date.now().toString());
+                      }
+                    } catch (err) {
+                      setMessage({ text: 'An unexpected error occurred', type: 'error' });
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }} className="flex flex-col gap-6">
+                    <div className="p-4 bg-secondary-container/20 border border-secondary-container rounded-lg text-body-sm font-body-sm text-on-surface-variant">
+                      Please check your email <strong>{user.email}</strong> for the 6-digit verification code.
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-label-sm font-label-sm text-on-surface-variant">Verification Code (OTP)</label>
+                      <input 
+                        type="text" 
+                        name="otp" 
+                        maxLength={6}
+                        pattern="\d{6}"
+                        placeholder="123456"
+                        className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-center tracking-widest text-lg"
+                        required 
+                      />
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      disabled={isLoading}
+                      className="mt-2 bg-primary text-on-primary h-12 rounded-lg text-label-md font-label-md font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isLoading ? 'Verifying...' : (
+                        <>
+                          <span className="material-symbols-outlined text-[18px]">verified</span> Verify & Update PIN
+                        </>
+                      )}
+                    </button>
+
+                    <button 
+                      type="button"
+                      onClick={() => { setOtpSent(false); setMessage(null); }}
+                      className="text-label-sm font-label-sm text-primary hover:underline self-center"
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                )}
               </div>
 
-              {!otpSent ? (
-                <form onSubmit={handleSendOtp} className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-label-sm font-label-sm text-on-surface-variant">New Password</label>
-                    <input 
-                      type="password" 
-                      value={tempPassword}
-                      onChange={(e) => setTempPassword(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                      required 
-                      minLength={6}
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-label-sm font-label-sm text-on-surface-variant">Confirm New Password</label>
-                    <input 
-                      type="password" 
-                      value={tempConfirm}
-                      onChange={(e) => setTempConfirm(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                      required 
-                      minLength={6}
-                    />
-                  </div>
-
-                  <button 
-                    type="submit" 
-                    disabled={isLoading}
-                    className="mt-4 bg-primary text-on-primary h-12 rounded-lg text-label-md font-label-md font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {isLoading ? 'Sending...' : (
-                      <>
-                        <span className="material-symbols-outlined text-[18px]">mail</span> Send OTP
-                      </>
-                    )}
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handlePasswordUpdate} className="flex flex-col gap-6">
-                  <div className="p-4 bg-secondary-container/20 border border-secondary-container rounded-lg text-body-sm font-body-sm text-on-surface-variant">
-                    Please check your email <strong>{user.email}</strong> for the 6-digit verification code.
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-label-sm font-label-sm text-on-surface-variant">Verification Code (OTP)</label>
-                    <input 
-                      type="text" 
-                      name="otp" 
-                      maxLength={6}
-                      pattern="\d{6}"
-                      placeholder="123456"
-                      className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-center tracking-widest text-lg"
-                      required 
-                    />
-                  </div>
-
-                  <button 
-                    type="submit" 
-                    disabled={isLoading}
-                    className="mt-4 bg-primary text-on-primary h-12 rounded-lg text-label-md font-label-md font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {isLoading ? 'Verifying...' : (
-                      <>
-                        <span className="material-symbols-outlined text-[18px]">verified</span> Verify & Update Password
-                      </>
-                    )}
-                  </button>
-
-                  <button 
-                    type="button"
-                    onClick={() => { setOtpSent(false); setMessage(null); }}
-                    className="text-label-sm font-label-sm text-primary hover:underline self-center"
-                  >
-                    Cancel
-                  </button>
-                </form>
-              )}
+              {/* Change Password Section */}
+              <div>
+                <h2 className="text-headline-sm font-headline-sm text-primary mb-1">Change Password</h2>
+                <p className="text-body-sm font-body-sm text-on-surface-variant mb-6">Ensure your account is using a long, random password to stay secure.</p>
+                <div className="p-4 bg-surface-container border border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface-variant">
+                  For account security, if you wish to change your master password, please use the <strong>Forgot Password</strong> link on the login page or contact support.
+                </div>
+              </div>
             </div>
           )}
 

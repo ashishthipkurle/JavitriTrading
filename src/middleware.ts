@@ -31,6 +31,7 @@ export async function middleware(request: NextRequest) {
   // Do NOT use getSession() as it doesn't validate the token with the server.
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
@@ -42,6 +43,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/register') ||
     pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/forgot-pin') ||
     pathname === '/' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/v1/auth')
@@ -51,8 +53,17 @@ export async function middleware(request: NextRequest) {
 
   // --- Protected routes: require authentication ---
   if (!user) {
+    // If getUser failed due to a network error but auth cookies exist,
+    // allow the request through — layout-level guards will handle it.
+    const hasAuthCookies = request.cookies.getAll().some(c => c.name.startsWith('sb-'))
+    if (authError && hasAuthCookies) {
+      console.error('Middleware getUser() failed but auth cookies present, allowing through:', authError.message)
+      return supabaseResponse
+    }
+
     const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirectTo', pathname)
+    const fullPath = pathname + request.nextUrl.search
+    loginUrl.searchParams.set('redirectTo', fullPath)
     return NextResponse.redirect(loginUrl)
   }
 

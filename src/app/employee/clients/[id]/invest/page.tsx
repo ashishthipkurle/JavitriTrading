@@ -56,7 +56,7 @@ export default async function EmployeeClientInvestPage({ params }: { params: { i
             <span className="material-symbols-outlined text-error">error</span>
             <div>
               <h4 className="font-label-md font-bold">KYC Not Approved</h4>
-              <p className="text-body-sm mt-1">This client's KYC status is currently <strong>{client.kycStatus}</strong>. They cannot invest until their KYC is approved by an admin.</p>
+              <p className="text-body-sm mt-1">This client&apos;s KYC status is currently <strong>{client.kycStatus}</strong>. They cannot invest until their KYC is approved by an admin.</p>
             </div>
           </div>
         ) : (

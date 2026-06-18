@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Transaction } from '@prisma/client';
+import Link from 'next/link';
 
 export default function WalletClient({ 
   walletBalance, 

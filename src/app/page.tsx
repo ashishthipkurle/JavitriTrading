@@ -2,6 +2,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import PricingCards from '@/components/PricingCards';
 import UserMenu from '@/components/UserMenu';
+import ClearPinSession from '@/components/ClearPinSession';
 import { getAuthUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -58,6 +59,8 @@ export default async function LandingPage() {
 
   return (
     <div className="bg-surface text-on-surface min-h-screen flex flex-col pt-16">
+      {/* Clear PIN session when visiting landing page */}
+      <ClearPinSession />
       {/* TopNavBar Component */}
       <header className="bg-surface text-primary border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-sm md:px-md h-16">
         <div className="max-w-container-max mx-auto w-full flex justify-between items-center">
@@ -212,7 +215,7 @@ export default async function LandingPage() {
               {getContent('plans_subtitle', 'Daily income opportunities with expert guidance. Low investment, high growth potential, safe strategy, and trusted service.')}
             </p>
           </div>
-          <PricingCards plans={fdPlans} />
+          <PricingCards plans={fdPlans} isLoggedIn={!!user} />
         </section>
 
         {/* How It Works Section */}
@@ -322,10 +325,17 @@ export default async function LandingPage() {
               Join the fastest-growing trading advisory platform today and secure your daily income.
             </p>
             <div className="pt-sm">
-              <Link href="/register" className="inline-flex items-center gap-2 bg-on-surface text-surface font-label-md text-label-md px-8 py-4 rounded-xl hover:bg-primary-container hover:text-on-primary-container transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
-                Create Free Account
-                <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-              </Link>
+              {user ? (
+                <Link href="/dashboard/investments/new" className="inline-flex items-center gap-2 bg-on-surface text-surface font-label-md text-label-md px-8 py-4 rounded-xl hover:bg-primary-container hover:text-on-primary-container transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                  Start Investing
+                  <span className="material-symbols-outlined text-[20px]">trending_up</span>
+                </Link>
+              ) : (
+                <Link href="/register" className="inline-flex items-center gap-2 bg-on-surface text-surface font-label-md text-label-md px-8 py-4 rounded-xl hover:bg-primary-container hover:text-on-primary-container transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                  Create Free Account
+                  <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                </Link>
+              )}
             </div>
           </div>
         </section>
@@ -366,7 +376,7 @@ export default async function LandingPage() {
               <ul className="space-y-sm">
                 <li><Link href="/" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-secondary-container transition-all duration-200">Home</Link></li>
                 <li><Link href="#fd-plans" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-secondary-container transition-all duration-200">FD Plans</Link></li>
-                <li><Link href="#about" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-secondary-container transition-all duration-200">About Us</Link></li>
+                <li><Link href="/about" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-secondary-container transition-all duration-200">About Us</Link></li>
                 <li><Link href="/register" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-secondary-container transition-all duration-200">Get Started</Link></li>
                 <li><Link href="/login" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-secondary-container transition-all duration-200">Login</Link></li>
               </ul>
@@ -408,7 +418,13 @@ export default async function LandingPage() {
         <div className="border-t border-on-primary-container/10">
           <div className="max-w-container-max mx-auto px-sm md:px-md py-md flex flex-col md:flex-row justify-between items-center gap-xs">
             <span className="text-body-sm font-body-sm opacity-50">© {new Date().getFullYear()} Javitri Trading. All rights reserved.</span>
-            <span className="text-body-sm font-body-sm opacity-50">Made with <span className="text-secondary-container">♥</span> in India</span>
+            <div className="flex items-center gap-4">
+              <Link href="/developer" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-primary transition-all flex items-center gap-1 border border-outline-variant/30 bg-surface-container-low px-2 py-1 rounded-md">
+                <span className="material-symbols-outlined text-[14px]">code</span>
+                Developer
+              </Link>
+              <span className="text-body-sm font-body-sm opacity-50">Made with <span className="text-secondary-container">♥</span> in India</span>
+            </div>
           </div>
         </div>
       </footer>

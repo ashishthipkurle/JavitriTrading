@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import NewInvestmentWizard from './NewInvestmentWizard';
 import Link from 'next/link';
 
-export default async function NewInvestmentPage() {
+export default async function NewInvestmentPage({ searchParams }: { searchParams: Promise<{ planId?: string }> }) {
+  const { planId } = await searchParams;
   const authUser = await getAuthUser();
   if (!authUser) redirect('/login');
 
@@ -33,5 +34,33 @@ export default async function NewInvestmentPage() {
     );
   }
 
-  return <NewInvestmentWizard />;
+  const plansData = await prisma.fDPlan.findMany({
+    where: { isActive: true },
+    orderBy: { amount: 'asc' },
+    include: {
+      _count: {
+        select: { investments: true }
+      }
+    }
+  });
+
+  let mostPopularPlanId = '';
+  let maxInvestments = -1;
+  
+  const plans = plansData.map(plan => {
+    if (plan._count.investments > maxInvestments) {
+      maxInvestments = plan._count.investments;
+      mostPopularPlanId = plan.id;
+    }
+    // We don't need to send the _count to the client
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _count, ...rest } = plan;
+    return {
+      ...rest,
+      amount: Number(rest.amount),
+      dailyReturnAmount: Number(rest.dailyReturnAmount)
+    };
+  });
+
+  return <NewInvestmentWizard plans={plans} popularPlanId={mostPopularPlanId} initialPlanId={planId} />;
 }

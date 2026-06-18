@@ -137,7 +137,7 @@ export default async function AssignClientPage({ searchParams }: { searchParams:
           )}
 
           {query.length >= 3 && searchResults.length === 0 && (
-            <p className="text-on-surface-variant text-label-md bg-surface-container p-4 rounded-lg text-center">No clients found matching "{query}". The client must register an account first.</p>
+            <p className="text-on-surface-variant text-label-md bg-surface-container p-4 rounded-lg text-center">No clients found matching &quot;{query}&quot;. The client must register an account first.</p>
           )}
         </div>
       </div>

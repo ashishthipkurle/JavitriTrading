@@ -65,6 +65,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, message: 'OTP sent successfully' });
   } catch (error: any) {
     console.error('Send OTP Error:', error);
-    return NextResponse.json({ error: 'Failed to send OTP' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to send OTP. Please check your SMTP settings or Resend sandbox restrictions.' }, { status: 500 });
   }
 }

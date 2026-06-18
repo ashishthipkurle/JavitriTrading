@@ -1,150 +1,261 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
 
-export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+function ForgotPasswordForm() {
+  const router = useRouter();
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  
+  const [otpSent, setOtpSent] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) value = value.slice(0, 1);
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-    if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`)?.focus();
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+    setIsLoading(true);
+
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        setError(error.message || 'Failed to send reset email');
+        setIsLoading(false);
+        return;
+      }
+
+      setOtpSent(true);
+      setMessage(`A 6-digit verification code has been sent to ${email}`);
+    } catch (err: any) {
+      setError('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      
+      // Verify OTP (logs the user in)
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'recovery'
+      });
+
+      if (verifyError) {
+        setError(verifyError.message || 'Invalid verification code');
+        setIsLoading(false);
+        return;
+      }
+
+      // Update password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password
+      });
+
+      if (updateError) {
+        setError(updateError.message || 'Failed to update password');
+        setIsLoading(false);
+        return;
+      }
+
+      // Sign out since they should log back in with PIN
+      await supabase.auth.signOut();
+
+      setMessage("Password reset successfully! Redirecting to login...");
+      
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+
+    } catch (err: any) {
+      setError("An unexpected error occurred");
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="bg-surface-container flex items-center justify-center min-h-screen text-on-surface p-margin-mobile md:p-margin-desktop">
-      <div className="bg-surface-container-lowest w-full max-w-[480px] rounded-xl border border-outline-variant shadow-[0px_12px_32px_rgba(10,22,40,0.08)] p-unit-lg md:p-unit-xl">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block text-primary font-headline-md font-bold mb-6 hover:opacity-80 transition-opacity">
-            ProWealth Advisory
-          </Link>
-          <h1 className="text-headline-sm font-headline-sm text-on-surface mb-2">Reset Password</h1>
-          <p className="text-body-sm font-body-sm text-on-surface-variant">Follow the steps to regain access to your account.</p>
-        </div>
-
-        {/* 3-Step Indicator */}
-        <div className="flex justify-between items-center mb-8 relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-outline-variant -z-10"></div>
-          <div 
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-primary -z-10 transition-all duration-300" 
-            style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : '100%' }}
-          ></div>
+    <div className="h-screen w-full flex flex-col md:flex-row overflow-hidden bg-surface-container-lowest">
+      <main className="w-full md:w-[60%] h-full flex flex-col justify-center items-center px-margin-mobile md:px-xl py-xl overflow-y-auto relative z-10">
+        <div className="w-full max-w-[480px] flex flex-col items-center">
           
-          {[1, 2, 3].map((num) => (
-            <div key={num} className="flex flex-col items-center gap-2 bg-surface-container-lowest px-2 step-indicator">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-label-sm font-label-sm font-bold border-2 border-surface-container-lowest shadow-sm transition-colors duration-300 ${step >= num ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
-                {num}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Step 1: Email */}
-        {step === 1 && (
-          <div className="step-container active">
-            <div className="mb-6">
-              <label className="block text-label-sm font-label-sm text-on-surface mb-2" htmlFor="email">Email Address</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">mail</span>
-                <input 
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-3 py-3 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" 
-                  id="email" 
-                  placeholder="name@example.com" 
-                  type="email" 
-                  defaultValue="investor@example.com"
-                />
-              </div>
-            </div>
-            <button 
-              className="w-full bg-primary text-on-primary rounded-lg py-3 text-label-md font-label-md font-bold hover:bg-opacity-90 transition-opacity" 
-              onClick={() => setStep(2)} 
-              type="button"
-            >
-              Send OTP
-            </button>
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 animate-pulse-subtle">
+            <span className="material-symbols-outlined text-[40px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>lock_reset</span>
           </div>
-        )}
 
-        {/* Step 2: OTP */}
-        {step === 2 && (
-          <div className="step-container">
-            <p className="text-body-sm font-body-sm text-on-surface-variant mb-6 text-center">We&apos;ve sent a 6-digit code to your email.</p>
-            <div className="flex justify-between gap-2 mb-6">
-              {[0, 1, 2, 3, 4, 5].map((index) => (
-                <input 
-                  key={index}
-                  id={`otp-${index}`}
-                  className="w-12 h-14 text-center text-headline-sm font-headline-sm border border-outline-variant rounded-lg bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" 
-                  maxLength={1} 
-                  type="text"
-                  value={otp[index]}
-                  onChange={(e) => handleOtpChange(index, e.target.value)}
-                  autoFocus={index === 0}
-                />
-              ))}
-            </div>
-            <button 
-              className="w-full bg-primary text-on-primary rounded-lg py-3 text-label-md font-label-md font-bold hover:bg-opacity-90 transition-opacity mb-4" 
-              onClick={() => setStep(3)} 
-              type="button"
-            >
-              Verify
-            </button>
-            <div className="text-center">
-              <button className="text-label-sm font-label-sm text-primary hover:underline" type="button">Resend Code</button>
-            </div>
+          <div className="text-center mb-10 w-full">
+            <h1 className="text-headline-lg font-headline-lg text-on-surface tracking-tight mb-2">Reset Password</h1>
+            <p className="text-body-lg font-body-lg text-on-surface-variant">Recover access to your account.</p>
           </div>
-        )}
 
-        {/* Step 3: New Password */}
-        {step === 3 && (
-          <div className="step-container">
-            <div className="mb-4">
-              <label className="block text-label-sm font-label-sm text-on-surface mb-2" htmlFor="new-password">New Password</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
-                <input 
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-3 py-3 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" 
-                  id="new-password" 
-                  placeholder="••••••••" 
-                  type="password"
-                />
-              </div>
+          {message && (
+            <div className="w-full bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-start gap-3 animate-slideDown">
+              <span className="material-symbols-outlined text-[20px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <p className="font-body-md text-body-md">{message}</p>
             </div>
-            <div className="mb-6">
-              <label className="block text-label-sm font-label-sm text-on-surface mb-2" htmlFor="confirm-password">Confirm Password</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock_reset</span>
-                <input 
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-3 py-3 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" 
-                  id="confirm-password" 
-                  placeholder="••••••••" 
-                  type="password"
-                />
-              </div>
+          )}
+
+          {error && (
+            <div className="w-full bg-error-container text-on-error-container p-4 rounded-xl mb-6 flex items-start gap-3 animate-slideDown">
+              <span className="material-symbols-outlined text-[20px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>error</span>
+              <p className="font-body-md text-body-md">{error}</p>
             </div>
-            <Link 
-              href="/login"
-              className="block w-full bg-primary text-on-primary text-center rounded-lg py-3 text-label-md font-label-md font-bold hover:bg-opacity-90 transition-opacity"
-            >
-              Reset Password
+          )}
+
+          {!otpSent ? (
+            <form onSubmit={handleSendOtp} className="w-full space-y-5">
+              <div className="space-y-1.5 group">
+                <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors block" htmlFor="email">Email Address</label>
+                <div className="relative">
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@institution.com"
+                    className="w-full bg-surface border border-outline-variant rounded-xl px-4 py-3.5 text-body-lg font-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-lg text-label-lg py-4 rounded-xl transition-all duration-200 mt-4 flex justify-center items-center gap-2 disabled:opacity-70 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"
+              >
+                {isLoading ? (
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                ) : (
+                  <>Send OTP <span className="material-symbols-outlined text-[20px]">mail</span></>
+                )}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleResetPassword} className="w-full space-y-5">
+              <div className="space-y-1.5 group">
+                <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors block" htmlFor="otp">Verification Code (OTP)</label>
+                <div className="relative">
+                  <input
+                    id="otp"
+                    type="text"
+                    maxLength={6}
+                    inputMode="numeric"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="123456"
+                    className="w-full bg-surface border border-outline-variant rounded-xl px-4 py-3.5 text-center tracking-widest text-2xl font-mono text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 group">
+                <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors block" htmlFor="password">New Password</label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-surface border border-outline-variant rounded-xl px-4 py-3.5 text-body-lg font-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 group">
+                <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors block" htmlFor="confirmPassword">Confirm New Password</label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-surface border border-outline-variant rounded-xl px-4 py-3.5 text-body-lg font-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-lg text-label-lg py-4 rounded-xl transition-all duration-200 mt-4 flex justify-center items-center gap-2 disabled:opacity-70 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"
+              >
+                {isLoading ? (
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                ) : (
+                  <>Reset Password <span className="material-symbols-outlined text-[20px]">check_circle</span></>
+                )}
+              </button>
+            </form>
+          )}
+
+          <div className="text-center mt-6">
+            <Link href="/login" className="text-label-md font-label-md text-primary hover:underline transition-all inline-flex items-center gap-1">
+              <span className="material-symbols-outlined text-[16px]">arrow_back</span> Back to Login
             </Link>
           </div>
-        )}
-
-        <div className="mt-8 text-center">
-          <Link href="/login" className="text-label-sm font-label-sm text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-1">
-            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-            Back to Login
-          </Link>
         </div>
-      </div>
+      </main>
+      
+      {/* Right Panel: Institutional Brand Anchor */}
+      <aside className="hidden md:flex w-[40%] h-full bg-primary-container flex-col justify-between p-xl relative overflow-hidden z-0">
+        <div 
+          className="absolute inset-0 z-0 opacity-20 mix-blend-overlay bg-cover bg-center" 
+          style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBx8pGho79s_i8LqWdp7foFZJdafpC6XeXS9GfytTtBz-ArQGY8JKwIxzOrtlTKV1pEYhch-GWbnK6btLwm6ID6hr2wQv3d9mVUWO2pXJScQcWslcViQ2-7bGKoq69PTxV5kkyfTm5fgx7dltpxBk4-Gs-7cUnoYgOIKOHJ8XwRE8WAh_LhySjRghvNdHf1T7zSuilyQ-uNpETKAFk0y_VoZ9geIkwv1aP7JrhywFNK21MbP6q0DgvPL_NvX-k0ugJ4edVJRNl8fdE')" }}
+        />
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-primary-container via-primary-container/80 to-transparent"></div>
+        
+        <div className="relative z-10 flex items-center gap-sm">
+          <div className="w-[32px] h-[32px] rounded-DEFAULT bg-secondary-container flex items-center justify-center">
+            <span className="material-symbols-outlined text-on-secondary-container text-[20px]">account_balance</span>
+          </div>
+          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Javitri Trading</span>
+        </div>
+      </aside>
     </div>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-surface-container-lowest"><span className="material-symbols-outlined animate-spin text-[40px] text-primary">progress_activity</span></div>}>
+      <ForgotPasswordForm />
+    </Suspense>
   );
 }

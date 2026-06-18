@@ -67,6 +67,8 @@ export default function RegisterPage() {
     phone: '',
     password: '',
     confirmPassword: '',
+    pin: '',
+    confirmPin: '',
   });
 
   // Step 2 state
@@ -76,10 +78,7 @@ export default function RegisterPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
 
   // Step 3 state
-  const [kycData, setKycData] = useState({
-    bankAccount: '',
-    ifsc: '',
-  });
+  const [kycData, setKycData] = useState({});
   const [panFile, setPanFile] = useState<File | null>(null);
   const [aadhaarFile, setAadhaarFile] = useState<File | null>(null);
   const [panPreview, setPanPreview] = useState<string | null>(null);
@@ -94,6 +93,7 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleKycChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKycData({ ...kycData, [e.target.name]: e.target.value });
   };
@@ -160,7 +160,7 @@ export default function RegisterPage() {
 
   const handleStep1Next = async () => {
     setError("");
-    if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword || !formData.pin || !formData.confirmPin) {
       setError("Please fill in all fields.");
       return;
     }
@@ -170,6 +170,14 @@ export default function RegisterPage() {
     }
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
+      return;
+    }
+    if (formData.pin.length !== 6 || !/^\d+$/.test(formData.pin)) {
+      setError("PIN must be exactly 6 digits.");
+      return;
+    }
+    if (formData.pin !== formData.confirmPin) {
+      setError("PINs do not match.");
       return;
     }
 
@@ -269,10 +277,6 @@ export default function RegisterPage() {
 
   const handleStep3Submit = async () => {
     setError("");
-    if (!kycData.bankAccount || !kycData.ifsc) {
-      setError("Please fill in your bank details.");
-      return;
-    }
     if (!panFile || !aadhaarFile) {
       setError("Please upload both PAN and Aadhaar documents.");
       return;
@@ -291,10 +295,9 @@ export default function RegisterPage() {
         body: JSON.stringify({
           name: formData.name,
           phone: formData.phone,
-          bankAccount: kycData.bankAccount,
-          ifsc: kycData.ifsc,
           panDocUrl,
-          aadhaarDocUrl
+          aadhaarDocUrl,
+          pin: formData.pin
         }),
       });
 
@@ -360,6 +363,11 @@ export default function RegisterPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputField icon="lock" label="Password" id="password" name="password" placeholder="••••••••" required type="password" value={formData.password} onChange={handleChange} />
           <InputField icon="lock" label="Confirm Password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required type="password" value={formData.confirmPassword} onChange={handleChange} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField icon="dialpad" label="6-Digit PIN (For Dashboard Access)" id="pin" name="pin" placeholder="123456" required type="password" maxLength={6} inputMode="numeric" value={formData.pin} onChange={handleChange} />
+          <InputField icon="dialpad" label="Confirm 6-Digit PIN" id="confirmPin" name="confirmPin" placeholder="123456" required type="password" maxLength={6} inputMode="numeric" value={formData.confirmPin} onChange={handleChange} />
         </div>
 
         <div className="pt-2">
@@ -445,16 +453,6 @@ export default function RegisterPage() {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-label-lg font-label-lg text-primary font-bold flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px]">account_balance</span> Bank Details
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField icon="account_balance" label="Bank Account Number" id="bankAccount" name="bankAccount" placeholder="Enter account number" required type="text" value={kycData.bankAccount} onChange={handleKycChange} />
-          <InputField icon="pin" label="IFSC Code" id="ifsc" name="ifsc" placeholder="e.g. SBIN0001234" required type="text" value={kycData.ifsc} onChange={handleKycChange} style={{textTransform: 'uppercase'}} />
-        </div>
-
-        <hr className="border-outline-variant/50 my-2" />
-
         <h3 className="text-label-lg font-label-lg text-primary font-bold flex items-center gap-2">
           <span className="material-symbols-outlined text-[20px]">badge</span> Identity Documents
         </h3>

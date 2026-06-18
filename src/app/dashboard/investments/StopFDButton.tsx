@@ -16,7 +16,7 @@ export default function StopFDButton({ investmentId, isActive }: { investmentId:
       if (result.success) {
         alert("Investment successfully stopped. Funds have been returned to your wallet.");
       } else {
-        alert(`Failed to stop investment: ${result.message}`);
+        alert(`Failed to stop investment: ${(result as any).message || 'Unknown error'}`);
       }
     });
   };

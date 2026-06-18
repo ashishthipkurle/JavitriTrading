@@ -43,6 +43,7 @@ export async function POST(req: Request) {
       }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,

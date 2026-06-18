@@ -9,8 +9,6 @@ export default function CreateClientForm() {
     email: "",
     phone: "",
     password: "",
-    bankAccount: "",
-    ifsc: "",
   });
   const [panFile, setPanFile] = useState<File | null>(null);
   const [aadhaarFile, setAadhaarFile] = useState<File | null>(null);
@@ -65,7 +63,7 @@ export default function CreateClientForm() {
 
       if (result.success) {
         setSuccess("Client account successfully created and assigned to your portfolio.");
-        setFormData({ name: "", email: "", phone: "", password: "", bankAccount: "", ifsc: "" });
+        setFormData({ name: "", email: "", phone: "", password: "" });
         setPanFile(null);
         setAadhaarFile(null);
       } else {
@@ -141,28 +139,6 @@ export default function CreateClientForm() {
 
       <h4 className="text-label-md font-label-md text-primary font-bold border-b border-outline-variant pb-1 mt-2">KYC Details</h4>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-2">
-          <label className="text-label-sm font-label-sm text-on-surface-variant">Bank Account Number</label>
-          <input 
-            type="text" 
-            name="bankAccount"
-            required
-            value={formData.bankAccount}
-            onChange={handleChange}
-            className="bg-surface border border-outline-variant rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-label-sm font-label-sm text-on-surface-variant">IFSC Code</label>
-          <input 
-            type="text" 
-            name="ifsc"
-            required
-            value={formData.ifsc}
-            onChange={handleChange}
-            className="bg-surface border border-outline-variant rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none uppercase"
-          />
-        </div>
         <div className="flex flex-col gap-2">
           <label className="text-label-sm font-label-sm text-on-surface-variant">Upload PAN Card Image</label>
           <input 

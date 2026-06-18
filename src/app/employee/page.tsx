@@ -89,7 +89,7 @@ export default async function EmployeeDashboard() {
               {recentClients.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-unit-lg py-8 text-center text-on-surface-variant">
-                    You have no clients yet. Click "+ New Client" to assign someone to your portfolio.
+                    You have no clients yet. Click &quot;+ New Client&quot; to assign someone to your portfolio.
                   </td>
                 </tr>
               ) : (

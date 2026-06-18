@@ -16,12 +16,20 @@ function LoginForm() {
 
   const registered = searchParams.get("registered");
 
+    const [pin, setPin] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
+      if (pin.length > 0 && (pin.length !== 6 || !/^\d+$/.test(pin))) {
+        setError("PIN must be exactly 6 digits");
+        setIsLoading(false);
+        return;
+      }
+
       const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
 
@@ -32,10 +40,41 @@ function LoginForm() {
 
       if (authError) {
         setError(authError.message || "Invalid email or password");
-      } else {
-        router.push("/dashboard");
-        router.refresh();
+        setIsLoading(false);
+        return;
       }
+
+      // Verify PIN
+      const pinRes = await fetch('/api/v1/auth/verify-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin }),
+      });
+
+      if (!pinRes.ok && !pinRes.ok /* just to keep structure but we handle it via JSON */) {
+        const pinData = await pinRes.json();
+        
+        if (pinRes.status === 200 && pinData.needsSetup) {
+           // handled below
+        } else {
+          await supabase.auth.signOut();
+          setError(pinData.error || "Invalid PIN");
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      const pinData = await pinRes.json().catch(() => ({}));
+
+      if (pinData.needsSetup) {
+        sessionStorage.setItem('needsPinSetup', 'true');
+      } else {
+        sessionStorage.setItem('pinUnlocked', 'true');
+        sessionStorage.setItem('lastActiveTime', Date.now().toString());
+      }
+
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");
     } finally {
@@ -113,6 +152,26 @@ function LoginForm() {
               </div>
             </div>
 
+            <div className="space-y-1.5 group">
+              <div className="flex justify-between items-center">
+                <label className="text-label-md font-label-md text-on-surface-variant group-focus-within:text-primary transition-colors" htmlFor="pin">6-Digit PIN</label>
+                <Link href="/forgot-pin" className="text-label-md font-label-md text-primary font-bold hover:underline transition-all">Forgot PIN?</Link>
+              </div>
+              <div className="relative">
+                <input
+                  id="pin"
+                  type="password"
+                  maxLength={6}
+                  inputMode="numeric"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  placeholder="123456"
+                  className="w-full bg-surface border border-outline-variant rounded-xl px-4 py-3.5 text-body-lg font-body-lg tracking-widest text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/60"
+                  required
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={isLoading}
@@ -124,6 +183,15 @@ function LoginForm() {
                 <>Login <span className="material-symbols-outlined text-[20px]">arrow_forward</span></>
               )}
             </button>
+            
+            <div className="text-center mt-6">
+              <p className="text-body-md font-body-md text-on-surface-variant">
+                Don't have an account?{' '}
+                <Link href="/register" className="text-primary font-bold hover:underline transition-all">
+                  Sign Up
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
       </main>

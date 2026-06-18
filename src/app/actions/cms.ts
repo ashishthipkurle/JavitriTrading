@@ -6,7 +6,7 @@ import { Role, CMSType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {
-  let user = await getAuthUser();
+  const user = await getAuthUser();
   if (!user || user.role !== Role.ADMIN) {
     if (process.env.NODE_ENV === "development") {
       // Bypass auth in development if no valid session

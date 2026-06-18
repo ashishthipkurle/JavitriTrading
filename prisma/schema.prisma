@@ -22,6 +22,8 @@ model User {
   walletBalance  Decimal        @default(0)    @db.Decimal(14,2)
   isBlocked      Boolean        @default(false)
   twoFASecret    String?
+  avatarUrl      String?
+  pinHash        String?
   createdAt      DateTime       @default(now())
   kyc               KYC?
   investments       Investment[]
@@ -30,6 +32,7 @@ model User {
   commissionsEarned Commission[]        @relation("EmployeeCommissions")
   auditLogs         AuditLog[]
   supportTickets    SupportTicket[]
+  notifications     Notification[]
 }
 
 enum Role {
@@ -55,8 +58,8 @@ model KYC {
   user          User     @relation(fields: [userId], references: [id])
   panNumber     String? // AES-256-GCM encrypted
   aadhaarNumber String? // AES-256-GCM encrypted
-  bankAccount   String // AES-256-GCM encrypted
-  ifsc          String
+  bankAccount   String? // AES-256-GCM encrypted
+  ifsc          String?
   panDocUrl     String?
   aadhaarDocUrl String?
   rejectionNote String?
@@ -266,4 +269,22 @@ model OTPToken {
   createdAt DateTime @default(now())
 
   @@unique([email, token])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String           @db.Text
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
 }

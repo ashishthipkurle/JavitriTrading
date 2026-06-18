@@ -12,7 +12,7 @@ interface Plan {
   description: string;
 }
 
-export default function PricingCards({ plans }: { plans: Plan[] }) {
+export default function PricingCards({ plans, isLoggedIn = false }: { plans: Plan[], isLoggedIn?: boolean }) {
   const [activeIdx, setActiveIdx] = useState<number>(1);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +54,9 @@ export default function PricingCards({ plans }: { plans: Plan[] }) {
       >
         {plans.map((plan, idx) => {
           const isActive = activeIdx === idx;
+          const investHref = isLoggedIn
+            ? `/dashboard/investments/new?planId=${plan.id}`
+            : '/register';
 
           return (
             <div
@@ -103,7 +106,7 @@ export default function PricingCards({ plans }: { plans: Plan[] }) {
               </ul>
 
               <Link
-                href="/register"
+                href={investHref}
                 className={`
                   w-full text-center py-2 rounded-lg font-label-md text-label-md transition-colors
                   ${isActive
