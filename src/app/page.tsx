@@ -117,10 +117,17 @@ export default async function LandingPage() {
                 {getContent('hero_subtitle', 'Experience institutional-grade financial growth. Join thousands of investors leveraging our proprietary algorithms and expert advisory for secure, consistent yield.')}
               </p>
               <div className="flex flex-wrap gap-sm pt-sm">
-                <Link href="/register" className="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgba(254,166,25,0.2)]">
-                  Start Investing
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </Link>
+                {user ? (
+                  <Link href="/dashboard/investments/new" className="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgba(254,166,25,0.2)]">
+                    Start Investing
+                    <span className="material-symbols-outlined text-[18px]">trending_up</span>
+                  </Link>
+                ) : (
+                  <Link href="/register" className="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgba(254,166,25,0.2)]">
+                    Create Free Account
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  </Link>
+                )}
                 <a href="https://t.me/Javitritradingservice" target="_blank" rel="noopener noreferrer" className="border-2 border-primary-container text-primary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-primary-container hover:text-on-primary transition-all flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">send</span>
                   Join Telegram
