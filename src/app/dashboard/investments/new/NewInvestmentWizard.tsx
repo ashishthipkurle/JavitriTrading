@@ -20,13 +20,14 @@ interface FDPlan {
   isActive: boolean;
 }
 
-export default function NewInvestmentWizard({ plans, popularPlanId, initialPlanId }: { plans: FDPlan[], popularPlanId?: string, initialPlanId?: string }) {
+export default function NewInvestmentWizard({ plans, popularPlanId, initialPlanId, walletBalance = 0 }: { plans: FDPlan[], popularPlanId?: string, initialPlanId?: string, walletBalance?: number }) {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'wallet'>('razorpay');
 
   useEffect(() => {
     if (plans && plans.length > 0) {
@@ -47,6 +48,34 @@ export default function NewInvestmentWizard({ plans, popularPlanId, initialPlanI
     if (!selectedPlan || isProcessing) return;
     setPaymentError('');
     setIsProcessing(true);
+
+    if (paymentMethod === 'wallet') {
+      try {
+        if (walletBalance < selectedPlan.amount) {
+          throw new Error('Insufficient wallet balance');
+        }
+
+        const res = await fetch('/api/investments/create-from-wallet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planId: selectedPlan.id }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || 'Failed to process payment from wallet');
+        }
+
+        // Success
+        setStep(3);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+        setPaymentError(message);
+      } finally {
+        setIsProcessing(false);
+      }
+      return;
+    }
 
     try {
       // Step 1: Create Razorpay order on server
@@ -246,9 +275,28 @@ export default function NewInvestmentWizard({ plans, popularPlanId, initialPlanI
                   {selectedPlan.name}
                 </span>
               </div>
-              <div className="flex justify-between items-center py-unit-xs border-b border-outline-variant">
+              <div className="flex flex-col gap-2 py-unit-sm border-b border-outline-variant">
                 <span className="text-label-md font-label-md text-on-surface-variant">Payment Method</span>
-                <span className="text-label-md font-label-md text-primary">Razorpay (UPI/Card/Net Banking)</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+                  <label className={`cursor-pointer flex items-center justify-between p-3 rounded-lg border ${paymentMethod === 'razorpay' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-outline-variant hover:border-outline'}`}>
+                    <div className="flex items-center gap-2">
+                      <input type="radio" name="paymentMethod" value="razorpay" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} className="text-primary focus:ring-primary" />
+                      <span className="text-body-sm font-bold text-primary">Razorpay</span>
+                    </div>
+                  </label>
+                  <label className={`cursor-pointer flex flex-col p-3 rounded-lg border ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-outline-variant hover:border-outline'} ${walletBalance < selectedPlan.amount ? 'opacity-60 grayscale' : ''}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input type="radio" name="paymentMethod" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} disabled={walletBalance < selectedPlan.amount} className="text-primary focus:ring-primary" />
+                        <span className="text-body-sm font-bold text-primary">Wallet Balance</span>
+                      </div>
+                      <span className="text-label-sm font-data-mono text-tertiary-fixed-dim">₹{walletBalance.toLocaleString()}</span>
+                    </div>
+                    {walletBalance < selectedPlan.amount && (
+                      <span className="text-[10px] text-error mt-1 ml-6">Insufficient balance</span>
+                    )}
+                  </label>
+                </div>
               </div>
               <div className="flex justify-between items-center py-unit-xs border-b border-outline-variant">
                 <span className="text-label-md font-label-md text-on-surface-variant">Est. Daily Return</span>

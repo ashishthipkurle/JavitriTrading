@@ -13,6 +13,92 @@ export default function WalletClient({
   const [showModal, setShowModal] = useState(false);
   const [amount, setAmount] = useState('5000');
   const [activeTab, setActiveTab] = useState('all');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const router = useRouter();
+
+  const handlePayment = async () => {
+    if (isProcessing || !amount || Number(amount) <= 0) return;
+    setPaymentError('');
+    setIsProcessing(true);
+
+    try {
+      // Step 1: Create Wallet order on server
+      const orderRes = await fetch('/api/razorpay/wallet-create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: Number(amount) }),
+      });
+
+      if (!orderRes.ok) {
+        const errData = await orderRes.json();
+        throw new Error(errData.error || 'Failed to create order');
+      }
+
+      const orderData = await orderRes.json();
+
+      // Step 2: Open Razorpay Checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Javitri Trading',
+        description: 'Wallet Top Up',
+        order_id: orderData.orderId,
+        prefill: {
+          name: orderData.userName || '',
+          email: orderData.userEmail || '',
+          contact: orderData.userPhone || '',
+        },
+        theme: {
+          color: '#0a1628',
+        },
+        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          // Step 3: Verify payment on server
+          try {
+            const verifyRes = await fetch('/api/razorpay/wallet-verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: Number(amount),
+                userId: orderData.userId // We don't have it in orderData, let's fetch it via Auth in API, or we need to pass it
+              }),
+            });
+
+            if (!verifyRes.ok) {
+              const errData = await verifyRes.json();
+              throw new Error(errData.error || 'Payment verification failed');
+            }
+
+            // Success! Close modal and refresh
+            setShowModal(false);
+            setAmount('5000');
+            router.refresh();
+          } catch (verifyErr: unknown) {
+            const message = verifyErr instanceof Error ? verifyErr.message : 'Payment verification failed. Contact support.';
+            setPaymentError(message);
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setPaymentError(message);
+      setIsProcessing(false);
+    }
+  };
 
   const filteredTransactions = transactions.filter((tx) => {
     if (activeTab === 'all') return true;
@@ -185,11 +271,20 @@ export default function WalletClient({
                 </div>
               </div>
               <button
-                onClick={() => setShowModal(false)}
-                className="w-full h-14 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-lg hover:opacity-90 transition-opacity"
+                disabled={isProcessing || !amount || Number(amount) <= 0}
+                onClick={handlePayment}
+                className="w-full h-14 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-2"
               >
-                Proceed to Pay
+                {isProcessing ? (
+                  <>
+                    <span className="animate-spin material-symbols-outlined text-[20px]">progress_activity</span>
+                    Processing...
+                  </>
+                ) : (
+                  'Proceed to Pay'
+                )}
               </button>
+              {paymentError && <p className="text-error text-label-sm">{paymentError}</p>}
             </div>
           </div>
         </div>

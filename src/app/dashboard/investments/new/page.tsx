@@ -65,5 +65,5 @@ export default async function NewInvestmentPage({ searchParams }: { searchParams
     };
   });
 
-  return <NewInvestmentWizard plans={plans} popularPlanId={mostPopularPlanId} initialPlanId={planId} />;
+  return <NewInvestmentWizard plans={plans} popularPlanId={mostPopularPlanId} initialPlanId={planId} walletBalance={Number(user.walletBalance)} />;
 }
