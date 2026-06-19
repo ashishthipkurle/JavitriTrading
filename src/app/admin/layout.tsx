@@ -34,7 +34,7 @@ export default async function AdminLayout({
       <main className="flex-1 md:ml-[260px] flex flex-col w-full">
         {/* Top Bar */}
         <header className="h-16 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between px-margin-desktop sticky top-0 z-30">
-          <h1 className="text-headline-md font-headline-md text-primary">Admin Console</h1>
+          <div />
           <div className="flex items-center gap-gutter">
             <div className="relative hidden sm:block">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
