@@ -31,7 +31,7 @@ export default async function DashboardLayout({
         <main className="flex-1 md:ml-[240px] flex flex-col h-screen overflow-hidden bg-background">
           {/* Top Header */}
           <header className="h-16 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between px-margin-desktop shrink-0">
-            <h2 className="text-headline-sm font-headline-sm text-primary font-bold">Dashboard</h2>
+            <div />
             <div className="flex items-center gap-4">
               <div className="relative hidden sm:block">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>

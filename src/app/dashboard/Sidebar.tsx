@@ -16,7 +16,7 @@ export default function Sidebar() {
   return (
     <nav className="hidden md:flex bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full w-[240px] z-40 flex-col p-unit-md gap-unit-sm">
       <div className="mb-8 mt-4 px-2">
-        <h1 className="text-headline-sm font-headline-sm font-bold text-primary">Wealth Portfolio</h1>
+        <h1 className="text-headline-sm font-headline-sm font-bold text-primary">Javitri Trading Service</h1>
         <p className="text-label-sm font-label-sm text-on-surface-variant mt-1">Premium Member</p>
       </div>
       
