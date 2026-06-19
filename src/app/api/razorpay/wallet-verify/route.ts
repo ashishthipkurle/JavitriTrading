@@ -31,6 +31,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
+    // SECURITY VERIFICATION: Fetch order from Razorpay to prevent tampering
+    const Razorpay = require('razorpay');
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    });
+
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    if (order.status !== 'paid') {
+      return NextResponse.json({ error: 'Order is not paid' }, { status: 400 });
+    }
+
+    const verifiedAmount = Number(order.amount) / 100;
+
+    if (order.notes?.type !== 'WALLET_DEPOSIT' || order.notes?.userId !== userId) {
+      return NextResponse.json({ error: 'Invalid order metadata' }, { status: 400 });
+    }
+
     // Process the top-up in a transaction
     await prisma.$transaction(async (tx) => {
       // 1. Create Transaction record
@@ -38,7 +61,7 @@ export async function POST(req: Request) {
         data: {
           userId,
           type: 'DEPOSIT',
-          amount,
+          amount: verifiedAmount,
           razorpayId: razorpay_payment_id,
           status: 'SUCCESS',
           meta: {
@@ -53,7 +76,7 @@ export async function POST(req: Request) {
         where: { id: userId },
         data: {
           walletBalance: {
-            increment: amount
+            increment: verifiedAmount
           }
         }
       });

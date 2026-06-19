@@ -29,6 +29,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payment verification failed' }, { status: 400 });
     }
 
+    // SECURITY VERIFICATION: Fetch order from Razorpay to prevent tampering
+    const Razorpay = require('razorpay');
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    });
+
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    if (order.status !== 'paid') {
+      return NextResponse.json({ error: 'Order is not paid' }, { status: 400 });
+    }
+
+    if (order.notes?.planId !== planId || order.notes?.userId !== user.id) {
+      return NextResponse.json({ error: 'Invalid order metadata. Plan ID mismatch.' }, { status: 400 });
+    }
+
     // Fetch the plan
     const plan = await prisma.fDPlan.findUnique({
       where: { id: planId, isActive: true },
