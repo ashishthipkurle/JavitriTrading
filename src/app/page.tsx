@@ -4,6 +4,7 @@ import PricingCards from '@/components/PricingCards';
 import UserMenu from '@/components/UserMenu';
 import ClearPinSession from '@/components/ClearPinSession';
 import { getAuthUser } from '@/lib/auth';
+import LandingNavLinks from '@/components/LandingNavLinks';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,12 +68,7 @@ export default async function LandingPage() {
           <div className="flex items-center">
             <span className="text-headline-md font-headline-md font-bold text-primary">Javitri Trading</span>
           </div>
-          <nav className="hidden md:flex space-x-md h-16">
-            {/* Active Navigation Item (Home) */}
-            <Link className="text-secondary font-bold border-b-2 border-secondary hover:text-secondary transition-colors duration-150 py-4 h-full flex items-center text-label-md font-label-md" href="/">Home</Link>
-            {/* Inactive Navigation Items */}
-            <Link className="text-on-surface-variant hover:text-secondary transition-colors duration-150 py-4 h-full flex items-center text-label-md font-label-md" href="#fd-plans">FD Plans</Link>
-          </nav>
+          <LandingNavLinks />
           <div className="flex items-center space-x-sm">
             {user ? (
               <UserMenu />
