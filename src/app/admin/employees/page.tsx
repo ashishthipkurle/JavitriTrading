@@ -1,6 +1,9 @@
 import { getEmployees } from "@/app/actions/admin";
 import { UpgradeUserForm, DemoteButton } from "./EmployeeActions";
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function AdminEmployeesPage() {
   const employees = await getEmployees();
 

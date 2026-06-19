@@ -5,6 +5,9 @@ import Link from "next/link";
 import ClientInvestForm from "./ClientInvestForm";
 import { formatCurrency } from "@/lib/utils";
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function EmployeeClientInvestPage({ params }: { params: { id: string } }) {
   const user = await getAuthUser();
   if (!user || user.role !== "EMPLOYEE") return null;

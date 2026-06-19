@@ -3,6 +3,9 @@ import { getAuthUser } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function EmployeeCommissionsPage() {
   const user = await getAuthUser();
   if (!user || user.role !== "EMPLOYEE") return null;

@@ -5,6 +5,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import CreateClientForm from "./CreateClientForm";
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function AssignClientPage({ searchParams }: { searchParams: { q?: string } }) {
   const user = await getAuthUser();
   if (!user || user.role !== "EMPLOYEE") return null;

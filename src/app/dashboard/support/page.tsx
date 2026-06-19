@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import SupportClient from './SupportClient';
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function SupportPage() {
   const authUser = await getAuthUser();
   if (!authUser) redirect('/login');

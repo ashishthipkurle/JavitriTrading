@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import WalletClient from './WalletClient';
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function WalletPage() {
   const authUser = await getAuthUser();
   if (!authUser) redirect('/login');

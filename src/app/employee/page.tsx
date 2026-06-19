@@ -3,6 +3,9 @@ import { getAuthUser } from "@/lib/auth";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function EmployeeDashboard() {
   const user = await getAuthUser();
   if (!user || user.role !== "EMPLOYEE") return null;

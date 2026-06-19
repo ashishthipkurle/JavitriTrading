@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+
+export const dynamic = 'force-dynamic';
+
 export default function UserDetailPage() {
   return (
     <div className="flex flex-col gap-gutter -mt-unit-xl">

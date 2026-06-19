@@ -4,6 +4,9 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import AvatarUpload from '@/components/AvatarUpload';
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function EmployeeProfilePage() {
   const authUser = await getAuthUser();
   if (!authUser) redirect('/login');

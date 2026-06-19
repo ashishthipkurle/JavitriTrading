@@ -4,6 +4,9 @@ import { redirect } from 'next/navigation';
 import NewInvestmentWizard from './NewInvestmentWizard';
 import Link from 'next/link';
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function NewInvestmentPage({ searchParams }: { searchParams: Promise<{ planId?: string }> }) {
   const { planId } = await searchParams;
   const authUser = await getAuthUser();

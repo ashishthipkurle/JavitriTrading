@@ -2,6 +2,9 @@ import prisma from "@/lib/prisma";
 import { InvestmentStatus, KYCStatus, PayoutStatus, TransactionType, TxStatus } from "@prisma/client";
 import RunPayoutsButton from "./RunPayoutsButton";
 
+
+export const dynamic = 'force-dynamic';
+
 function formatCurrency(amount: number) {
   if (amount >= 10000000) {
     return `₹${(amount / 10000000).toFixed(2)}Cr`;

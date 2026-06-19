@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import InvestmentsClient from './InvestmentsClient';
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function InvestmentsPage() {
   const authUser = await getAuthUser();
   if (!authUser) redirect('/login');

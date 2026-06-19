@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 
+
+export const dynamic = 'force-dynamic';
+
 export default async function NotificationsPage() {
   const user = await getAuthUser();
   if (!user) redirect("/login");
