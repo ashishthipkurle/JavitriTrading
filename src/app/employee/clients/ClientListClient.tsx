@@ -102,7 +102,7 @@ export default function ClientListClient({ clients }: { clients: any[] }) {
                       <div className="flex justify-end gap-2">
                         <button 
                           onClick={() => { setSelectedClient(client); setShowAddCashModal(true); }}
-                          className="text-label-sm font-label-sm bg-tertiary-container/20 text-tertiary-fixed-dim border border-tertiary-container px-3 py-2 rounded-lg hover:bg-tertiary-container/40 transition-all font-bold flex items-center gap-1"
+                          className="text-label-sm font-label-sm bg-surface-container-lowest text-primary border border-primary px-3 py-2 rounded-lg hover:bg-surface-container-low transition-all font-bold flex items-center gap-1"
                         >
                           <span className="material-symbols-outlined text-[16px]">account_balance_wallet</span>
                           Add Cash
