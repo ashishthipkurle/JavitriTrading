@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'KYC must be approved to invest' }, { status: 403 });
     }
 
-    if (user.accountOrigin === 'EMPLOYEE_MANAGED') {
+    if (user.managedBy) {
       return NextResponse.json({ error: 'Your account is managed by an employee. Please contact your manager to invest.' }, { status: 403 });
     }
 

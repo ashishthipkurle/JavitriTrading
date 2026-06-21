@@ -32,7 +32,16 @@ export async function getNotifications(limit = 10) {
       orderBy: { createdAt: "desc" },
       take: limit,
     });
-    return notifications;
+    
+    // Map to plain objects to ensure Next.js Server Actions can serialize them safely
+    return notifications.map(n => ({
+      id: n.id,
+      title: n.title,
+      message: n.message,
+      type: n.type,
+      isRead: n.isRead,
+      createdAt: n.createdAt,
+    }));
   } catch (error) {
     console.error("Error getting notifications:", error);
     return [];

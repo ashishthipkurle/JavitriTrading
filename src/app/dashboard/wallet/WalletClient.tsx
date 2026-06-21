@@ -12,10 +12,13 @@ export default function WalletClient({
   transactions: any[] 
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [amount, setAmount] = useState('5000');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [withdrawError, setWithdrawError] = useState('');
   const router = useRouter();
 
   const handlePayment = async () => {
@@ -101,6 +104,34 @@ export default function WalletClient({
     }
   };
 
+  const handleWithdraw = async () => {
+    if (isProcessing || !withdrawAmount || Number(withdrawAmount) <= 0) return;
+    setWithdrawError('');
+    setIsProcessing(true);
+
+    try {
+      const res = await fetch('/api/v1/client/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: Number(withdrawAmount) }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to request withdrawal');
+      }
+
+      setShowWithdrawModal(false);
+      setWithdrawAmount('');
+      router.refresh();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      setWithdrawError(message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const filteredTransactions = transactions.filter((tx) => {
     if (activeTab === 'all') return true;
     if (activeTab === 'deposits') return tx.type === 'DEPOSIT';
@@ -135,7 +166,10 @@ export default function WalletClient({
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
             Add Money
           </button>
-          <button className="flex-1 md:flex-none h-14 px-8 bg-surface-container-lowest text-primary border border-primary font-label-md text-label-md rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors font-bold">
+          <button 
+            onClick={() => setShowWithdrawModal(true)}
+            className="flex-1 md:flex-none h-14 px-8 bg-surface-container-lowest text-primary border border-primary font-label-md text-label-md rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors font-bold"
+          >
             <span className="material-symbols-outlined">arrow_downward</span>
             Withdraw
           </button>
@@ -286,6 +320,58 @@ export default function WalletClient({
                 )}
               </button>
               {paymentError && <p className="text-error text-label-sm">{paymentError}</p>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Withdraw Modal */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-primary/40 backdrop-blur-sm p-4">
+          <div className="bg-surface-container-lowest w-full max-w-md rounded-xl shadow-[0px_12px_32px_rgba(10,22,40,0.08)] border border-outline-variant overflow-hidden">
+            <div className="flex justify-between items-center p-6 border-b border-outline-variant">
+              <h2 className="text-headline-md font-headline-md text-primary">Request Withdrawal</h2>
+              <button onClick={() => setShowWithdrawModal(false)} className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="p-6 flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-label-md font-label-md text-primary">Amount to Withdraw (₹)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-data-mono">₹</span>
+                  <input
+                    className="w-full h-14 pl-10 pr-4 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-data-mono text-body-lg text-primary"
+                    type="number"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    placeholder="Enter amount"
+                  />
+                </div>
+                <div className="text-body-sm text-on-surface-variant mt-1">
+                  Available Balance: <span className="font-bold">{formatCurrency(walletBalance)}</span>
+                </div>
+              </div>
+              
+              <div className="bg-tertiary-container/20 p-4 rounded-lg border border-tertiary-container text-body-sm text-on-surface-variant">
+                Withdrawals typically process within 24 hours. The funds will be transferred to your KYC-verified bank account.
+              </div>
+
+              <button
+                disabled={isProcessing || !withdrawAmount || Number(withdrawAmount) <= 0 || Number(withdrawAmount) > walletBalance}
+                onClick={handleWithdraw}
+                className="w-full h-14 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-2"
+              >
+                {isProcessing ? (
+                  <>
+                    <span className="animate-spin material-symbols-outlined text-[20px]">progress_activity</span>
+                    Processing...
+                  </>
+                ) : (
+                  'Request Withdrawal'
+                )}
+              </button>
+              {withdrawError && <p className="text-error text-label-sm">{withdrawError}</p>}
             </div>
           </div>
         </div>

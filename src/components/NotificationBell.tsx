@@ -55,16 +55,31 @@ export default function NotificationBell({ basePath }: { basePath: string }) {
     }
   };
 
-  const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleMarkAsRead = async (id: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Optimistic update
+    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+    
     await markAsRead(id);
-    fetchNotifications();
+    // Silent fetch to sync
+    const count = await getUnreadCount();
+    setUnreadCount(count);
   };
 
   const handleMarkAllAsRead = async () => {
+    // Optimistic update
+    setUnreadCount(0);
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    
     await markAllAsRead();
-    fetchNotifications();
+    // Silent fetch to sync
+    const count = await getUnreadCount();
+    setUnreadCount(count);
   };
 
   const getIconForType = (type: string) => {
@@ -99,7 +114,7 @@ export default function NotificationBell({ basePath }: { basePath: string }) {
                 onClick={handleMarkAllAsRead}
                 className="text-label-sm text-primary hover:underline"
               >
-                Mark all as read
+                Mark all as seen
               </button>
             )}
           </div>
@@ -115,7 +130,8 @@ export default function NotificationBell({ basePath }: { basePath: string }) {
                 {notifications.map((notif) => (
                   <div 
                     key={notif.id} 
-                    className={`flex gap-3 p-4 border-b border-outline-variant transition-colors hover:bg-surface-container-lowest ${!notif.isRead ? 'bg-primary/5' : ''}`}
+                    onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}
+                    className={`flex gap-3 p-4 border-b border-outline-variant transition-colors hover:bg-surface-container-lowest ${!notif.isRead ? 'bg-primary/5 cursor-pointer' : ''}`}
                   >
                     <div className="flex-shrink-0 mt-1">
                       {getIconForType(notif.type)}
@@ -137,7 +153,7 @@ export default function NotificationBell({ basePath }: { basePath: string }) {
                           onClick={(e) => handleMarkAsRead(notif.id, e)}
                           className="mt-2 text-label-sm text-primary hover:underline"
                         >
-                          Mark as read
+                          Mark as seen
                         </button>
                       )}
                     </div>

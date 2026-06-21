@@ -19,11 +19,13 @@ export default async function AdminAnalyticsPage() {
   // Fetch Analytics Data
   
   // Total Users
-  const totalUsersCount = await prisma.user.count();
+  const totalUsersCount = await prisma.user.count({
+    where: { role: 'CLIENT' }
+  });
 
   // Pending KYC
   const pendingKYCCount = await prisma.user.count({
-    where: { kycStatus: KYCStatus.PENDING },
+    where: { kycStatus: KYCStatus.PENDING, role: 'CLIENT' },
   });
 
   // Active Investments

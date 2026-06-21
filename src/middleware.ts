@@ -36,17 +36,25 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Allow auth pages and public routes — always pass through
-  // Do NOT redirect logged-in users away from /login or /register here.
-  // The login page handles redirection client-side if the user is already authenticated.
+  const isAuthPage = pathname === '/login' || pathname === '/register';
+
+  if (isAuthPage) {
+    if (user) {
+      // If user is already logged in, redirect them to /dashboard
+      // The middleware will run again for /dashboard and redirect them to /admin or /employee if needed based on their role.
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    return supabaseResponse
+  }
+
+  // Allow public routes — always pass through
   if (
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
     pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/forgot-pin') ||
     pathname === '/' ||
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/api/v1/auth')
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/auth/callback')
   ) {
     return supabaseResponse
   }

@@ -20,29 +20,81 @@ export default function ClientListClient({ clients }: { clients: any[] }) {
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/employee/wallet-add', {
+      // Step 1: Create Wallet order on server with targetClientId
+      const orderRes = await fetch('/api/razorpay/wallet-create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientId: selectedClient.id,
+        body: JSON.stringify({ 
           amount: Number(amount),
-          notes
-        })
+          targetClientId: selectedClient.id
+        }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to add cash');
+      if (!orderRes.ok) {
+        const errData = await orderRes.json();
+        throw new Error(errData.error || 'Failed to create order');
       }
 
-      setShowAddCashModal(false);
-      setAmount('');
-      setNotes('');
-      setSelectedClient(null);
-      router.refresh();
+      const orderData = await orderRes.json();
+
+      // Step 2: Open Razorpay Checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Javitri Trading',
+        description: `Wallet Top Up for ${selectedClient.name}`,
+        order_id: orderData.orderId,
+        prefill: {
+          name: orderData.userName || '',
+          email: orderData.userEmail || '',
+          contact: orderData.userPhone || '',
+        },
+        theme: {
+          color: '#0a1628',
+        },
+        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          // Step 3: Verify payment on server
+          try {
+            const verifyRes = await fetch('/api/razorpay/wallet-verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: Number(amount),
+              }),
+            });
+
+            if (!verifyRes.ok) {
+              const errData = await verifyRes.json();
+              throw new Error(errData.error || 'Payment verification failed');
+            }
+
+            // Success! Close modal and refresh
+            setShowAddCashModal(false);
+            setAmount('');
+            setNotes('');
+            setSelectedClient(null);
+            router.refresh();
+          } catch (verifyErr: any) {
+            setErrorMsg(verifyErr.message || 'Payment verification failed');
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
     } catch (err: any) {
       setErrorMsg(err.message || 'Something went wrong');
-    } finally {
       setIsProcessing(false);
     }
   };

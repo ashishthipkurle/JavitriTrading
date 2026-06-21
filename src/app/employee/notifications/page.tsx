@@ -2,8 +2,6 @@ import { getAuthUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import Link from "next/link";
-
 
 import MarkAllSeenButton from "@/components/MarkAllSeenButton";
 
@@ -40,8 +38,8 @@ export default async function NotificationsPage() {
   const hasUnread = notifications.some(n => !n.isRead);
 
   return (
-    <div className="p-margin-mobile md:p-margin-desktop bg-surface min-h-full">
-      <div className="max-w-container-max mx-auto">
+    <div className="p-margin-mobile md:p-margin-desktop bg-surface min-h-full flex-1 w-full">
+      <div className="max-w-container-max mx-auto w-full">
         <header className="mb-unit-xl flex flex-col md:flex-row justify-between items-start md:items-end border-b border-outline-variant pb-unit-md gap-unit-md">
           <div>
             <h1 className="text-headline-xl font-headline-xl text-primary mb-unit-xs">Notifications</h1>

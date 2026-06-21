@@ -50,8 +50,16 @@ export async function POST(req: Request) {
 
     const verifiedAmount = Number(order.amount) / 100;
 
-    if (order.notes?.type !== 'WALLET_DEPOSIT' || order.notes?.userId !== userId) {
+    const targetUserId = order.notes?.userId;
+
+    if (order.notes?.type !== 'WALLET_DEPOSIT' || !targetUserId) {
       return NextResponse.json({ error: 'Invalid order metadata' }, { status: 400 });
+    }
+
+    if (targetUserId !== user.id) {
+      if (user.role !== 'EMPLOYEE' && user.role !== 'ADMIN') {
+        return NextResponse.json({ error: 'Unauthorized to top up this wallet' }, { status: 403 });
+      }
     }
 
     // Process the top-up in a transaction
@@ -59,7 +67,7 @@ export async function POST(req: Request) {
       // 1. Create Transaction record
       await tx.transaction.create({
         data: {
-          userId,
+          userId: targetUserId,
           type: 'DEPOSIT',
           amount: verifiedAmount,
           razorpayId: razorpay_payment_id,
@@ -73,7 +81,7 @@ export async function POST(req: Request) {
 
       // 2. Increment Wallet Balance
       await tx.user.update({
-        where: { id: userId },
+        where: { id: targetUserId },
         data: {
           walletBalance: {
             increment: verifiedAmount

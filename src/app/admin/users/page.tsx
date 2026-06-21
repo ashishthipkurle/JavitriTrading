@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import prisma from "@/lib/prisma";
+import KycDocsModal from "./KycDocsModal";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
+    where: { role: "CLIENT" },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -13,6 +15,12 @@ export default async function AdminUsersPage() {
       kycStatus: true,
       walletBalance: true,
       createdAt: true,
+      kyc: {
+        select: {
+          panDocUrl: true,
+          aadhaarDocUrl: true,
+        }
+      }
     }
   });
 
@@ -102,9 +110,11 @@ export default async function AdminUsersPage() {
                       </p>
                     </td>
                     <td className="p-4 text-right">
-                      <button className="inline-flex items-center justify-center px-4 py-2 border border-outline-variant text-on-surface-variant rounded-lg text-label-sm font-label-sm hover:bg-surface-container transition-colors disabled:opacity-50" disabled>
-                        View
-                      </button>
+                      <KycDocsModal 
+                        panDocUrl={user.kyc?.panDocUrl}
+                        aadhaarDocUrl={user.kyc?.aadhaarDocUrl}
+                        userName={user.name || user.email || 'User'}
+                      />
                     </td>
                   </tr>
                 );

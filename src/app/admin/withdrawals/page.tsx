@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import { decrypt } from "@/lib/encryption";
+import WithdrawalActionModals from "./WithdrawalActionModals";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +85,8 @@ export default async function AdminWithdrawalsPage() {
                 if (req.status === "COMPLETED") statusColor = "bg-[#009668]/10 text-[#005236]";
                 if (req.status === "FAILED") statusColor = "bg-[#ba1a1a]/10 text-[#93000a]";
 
+                const bankAccountDecrypted = user.kyc?.bankAccount ? decrypt(user.kyc.bankAccount) : null;
+
                 return (
                   <tr key={req.id} className="hover:bg-surface-container-low transition-colors group h-[64px]">
                     <td className="px-unit-md text-data-mono font-data-mono text-on-surface-variant">
@@ -118,14 +122,16 @@ export default async function AdminWithdrawalsPage() {
                       })}
                     </td>
                     <td className="px-unit-md text-right">
-                      <div className="flex justify-end gap-2">
-                        <button disabled={req.status !== "PENDING"} className="w-8 h-8 rounded flex items-center justify-center text-error hover:bg-error-container transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Reject">
-                          <span className="material-symbols-outlined text-[20px]">close</span>
-                        </button>
-                        <button disabled={req.status !== "PENDING"} className="w-8 h-8 rounded flex items-center justify-center text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/20 transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Approve">
-                          <span className="material-symbols-outlined text-[20px]">check</span>
-                        </button>
-                      </div>
+                      {req.status === "PENDING" ? (
+                        <WithdrawalActionModals 
+                          withdrawalId={req.id} 
+                          amount={Number(req.amount)}
+                          bankAccount={bankAccountDecrypted}
+                          ifsc={user.kyc?.ifsc || null}
+                        />
+                      ) : (
+                        <span className="text-label-sm font-label-sm text-on-surface-variant italic">Processed</span>
+                      )}
                     </td>
                   </tr>
                 );

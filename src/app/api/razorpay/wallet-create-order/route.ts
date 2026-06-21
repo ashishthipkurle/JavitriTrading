@@ -16,10 +16,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount } = await req.json();
+    const { amount, targetClientId } = await req.json();
 
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: 'Valid amount is required' }, { status: 400 });
+    }
+
+    let depositUserId = user.id;
+
+    if (targetClientId && targetClientId !== user.id) {
+      if (user.role !== 'EMPLOYEE' && user.role !== 'ADMIN') {
+        return NextResponse.json({ error: 'Only employees or admins can top up another wallet' }, { status: 403 });
+      }
+      depositUserId = targetClientId;
     }
 
     const amountInPaise = Math.round(Number(amount) * 100);
@@ -30,7 +39,8 @@ export async function POST(req: Request) {
       receipt: `wallet_${Date.now()}`,
       notes: {
         type: 'WALLET_DEPOSIT',
-        userId: user.id,
+        userId: depositUserId,
+        addedBy: targetClientId ? user.id : undefined,
       },
     });
 
