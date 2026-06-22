@@ -13,6 +13,7 @@ export default function AdminSidebar() {
     { href: '/admin/plans', icon: 'description', label: 'FD Plans' },
     { href: '/admin/investments', icon: 'trending_up', label: 'Investments' },
     { href: '/admin/withdrawals', icon: 'account_balance', label: 'Withdrawals' },
+    { href: '/admin/deposits', icon: 'payments', label: 'Deposits' },
     { href: '/admin/transactions', icon: 'receipt_long', label: 'Transactions' },
     { href: '/admin/cms', icon: 'edit_note', label: 'CMS Editor' },
   ];

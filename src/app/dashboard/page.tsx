@@ -204,7 +204,7 @@ export default async function DashboardOverviewPage() {
                 <tr className="bg-surface-container text-on-surface-variant text-label-sm font-label-sm uppercase tracking-wider">
                   <th className="px-unit-lg py-3 font-medium">Plan Name</th>
                   <th className="px-unit-lg py-3 font-medium">Principal</th>
-                  <th className="px-unit-lg py-3 font-medium">Monthly Return</th>
+                  <th className="px-unit-lg py-3 font-medium">Daily Return</th>
                   <th className="px-unit-lg py-3 font-medium">Status</th>
                 </tr>
               </thead>

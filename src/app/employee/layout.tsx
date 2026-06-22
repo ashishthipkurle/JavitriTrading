@@ -31,7 +31,7 @@ export default async function EmployeeLayout({
   return (
     <PinGate>
       <div className="bg-surface text-on-surface font-body-md antialiased flex min-h-screen">
-        <EmployeeSidebar />
+        <EmployeeSidebar user={user} />
 
         {/* Main Content Area */}
         <main className="flex-1 md:ml-[260px] flex flex-col w-full">

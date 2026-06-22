@@ -8,11 +8,11 @@ export async function POST(req: Request) {
   try {
     const user = await getAuthUser();
     
-    if (!user || user.role !== 'CLIENT') {
+    if (!user || (user.role !== 'CLIENT' && user.role !== 'EMPLOYEE')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (user.kycStatus !== 'APPROVED') {
+    if (user.role === 'CLIENT' && user.kycStatus !== 'APPROVED') {
       return NextResponse.json({ error: 'KYC must be approved to withdraw' }, { status: 403 });
     }
 

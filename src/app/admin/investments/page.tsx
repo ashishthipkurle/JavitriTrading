@@ -61,7 +61,7 @@ export default async function AdminInvestmentsPage() {
                     <td className="px-unit-md">
                       <p className="text-label-md font-label-md text-primary">{inv.plan.name}</p>
                       <p className="text-label-sm font-label-sm text-on-surface-variant">
-                        {inv.monthlyReturn.toString()}% / mo
+                        {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(inv.monthlyReturn))}/day
                       </p>
                     </td>
                     <td className="px-unit-md text-right text-data-mono font-data-mono text-primary font-semibold">

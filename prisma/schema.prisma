@@ -64,6 +64,28 @@ model KYC {
   aadhaarDocUrl String?
   rejectionNote String?
   updatedAt     DateTime @updatedAt
+
+  // Enrollment form fields
+  dateOfBirth        String?
+  residentialAddress String?
+  city               String?
+  state              String?
+  pinCode            String?
+  occupation         String?
+  altPhone           String?
+  gender             String?
+  bankHolderName     String?
+  bankName           String?
+  accountType        String?
+  upiId              String?
+  nomineeName        String?
+  nomineeRelation    String?
+  nomineeDob         String?
+  nomineePhone       String?
+  referredBy         String?
+  referralCode       String?
+  formNumber         String?
+  branch             String?
 }
 
 model FDPlan {

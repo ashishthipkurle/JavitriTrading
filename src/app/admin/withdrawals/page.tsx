@@ -128,6 +128,9 @@ export default async function AdminWithdrawalsPage() {
                           amount={Number(req.amount)}
                           bankAccount={bankAccountDecrypted}
                           ifsc={user.kyc?.ifsc || null}
+                          bankName={user.kyc?.bankName || null}
+                          accountType={user.kyc?.accountType || null}
+                          upiId={user.kyc?.upiId || null}
                         />
                       ) : (
                         <span className="text-label-sm font-label-sm text-on-surface-variant italic">Processed</span>

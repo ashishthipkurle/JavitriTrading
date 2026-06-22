@@ -12,7 +12,14 @@ export async function createClientAccountByEmployee(data: any) {
       throw new Error("Unauthorized: Employee access required");
     }
 
-    const { name, email, phone, password, panDocUrl, aadhaarDocUrl } = data;
+    const { 
+      name, email, phone, password, panDocUrl, aadhaarDocUrl, avatarUrl,
+      dateOfBirth, residentialAddress, city, state, pinCode, occupation, altPhone, gender,
+      panNumber, aadhaarNumber, bankHolderName, bankName, accountType, upiId,
+      nomineeName, nomineeRelation, nomineeDob, nomineePhone,
+      referredBy, referralCode, formNumber, branch
+    } = data;
+    
     if (!name || !email || !phone || !password || !panDocUrl || !aadhaarDocUrl) {
       throw new Error("Missing required fields including KYC details");
     }
@@ -37,12 +44,18 @@ export async function createClientAccountByEmployee(data: any) {
       email,
       password,
       email_confirm: true,
-      user_metadata: { name, phone }
+      user_metadata: { name, phone, avatarUrl }
     });
 
     if (authError) {
       throw new Error(authError.message);
     }
+
+    // Encrypt sensitive fields
+    const { encrypt } = await import('@/lib/encryption');
+    const encryptedPan = panNumber ? encrypt(panNumber) : null;
+    const encryptedAadhaar = aadhaarNumber ? encrypt(aadhaarNumber) : null;
+    const encryptedBank = data.bankAccount ? encrypt(data.bankAccount) : null;
 
     // Use transaction to create Profile and KYC
     const newUser = await prisma.$transaction(async (tx) => {
@@ -53,6 +66,7 @@ export async function createClientAccountByEmployee(data: any) {
           name,
           email,
           phone,
+          avatarUrl,
           role: "CLIENT",
           accountOrigin: "EMPLOYEE_MANAGED",
           managedBy: employee.id,
@@ -65,7 +79,31 @@ export async function createClientAccountByEmployee(data: any) {
         data: {
           userId: user.id,
           panDocUrl: panDocUrl,
-          aadhaarDocUrl: aadhaarDocUrl
+          aadhaarDocUrl: aadhaarDocUrl,
+          panNumber: encryptedPan,
+          aadhaarNumber: encryptedAadhaar,
+          bankAccount: encryptedBank,
+          ifsc: data.ifsc,
+          dateOfBirth,
+          residentialAddress,
+          city,
+          state,
+          pinCode,
+          occupation,
+          altPhone,
+          gender,
+          bankHolderName,
+          bankName,
+          accountType,
+          upiId,
+          nomineeName,
+          nomineeRelation,
+          nomineeDob,
+          nomineePhone,
+          referredBy,
+          referralCode,
+          formNumber,
+          branch
         }
       });
 
@@ -85,7 +123,7 @@ export async function createClientAccountByEmployee(data: any) {
     revalidatePath("/employee/clients");
     revalidatePath("/employee/clients/new");
     
-    return { success: true };
+    return { success: true, clientId: newUser.id };
   } catch (error: any) {
     console.error("Employee Create Client Error:", error);
     return { success: false, message: error.message || "Failed to create client account." };

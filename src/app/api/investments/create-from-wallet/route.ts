@@ -60,6 +60,7 @@ export async function POST(req: Request) {
         data: {
           userId: user.id,
           planId: plan.id,
+          managedBy: dbUser.managedBy,
           amount: planAmount,
           startDate,
           maturityDate,

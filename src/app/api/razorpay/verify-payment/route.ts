@@ -75,6 +75,7 @@ export async function POST(req: Request) {
         data: {
           userId: user.id,
           planId: plan.id,
+          managedBy: user.managedBy,
           amount,
           startDate,
           maturityDate,

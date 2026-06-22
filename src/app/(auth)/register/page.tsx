@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const STEPS = [
@@ -58,6 +58,12 @@ const StepProgressBar = ({ step }: { step: number }) => (
 export default function RegisterPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+
+  // Platform stats for right panel
+  const [platformStats, setPlatformStats] = useState({ totalAUM: 0, totalUsers: 0, activePlans: 0 });
+  useEffect(() => {
+    fetch('/api/v1/public/stats').then(r => r.json()).then(setPlatformStats).catch(() => {});
+  }, []);
 
   // Step 1 state
   const [formData, setFormData] = useState({
@@ -568,7 +574,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row antialiased font-body-md text-body-md bg-surface-container-lowest">
       {/* Left Side */}
-      <div className="w-full md:w-1/2 lg:w-5/12 flex flex-col min-h-screen bg-surface-container-lowest">
+      <div className="w-full md:w-1/2 flex flex-col min-h-screen bg-surface-container-lowest">
         <header className="p-lg flex items-center justify-between">
           <div className="flex items-center gap-xs">
             <span className="material-symbols-outlined text-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance</span>
@@ -577,7 +583,7 @@ export default function RegisterPage() {
           <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="/login">Log In Instead</Link>
         </header>
 
-        <main className="flex-grow flex flex-col justify-center px-margin-mobile md:px-xl py-lg max-w-[560px] w-full mx-auto">
+        <main className="flex-grow flex flex-col justify-center px-8 md:px-12 lg:px-16 py-lg w-full mx-auto">
           <StepProgressBar step={step} />
 
           {error && (
@@ -609,7 +615,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Side */}
-      <div className="hidden md:block w-1/2 lg:w-7/12 relative bg-surface-container-low overflow-hidden border-l border-outline-variant">
+      <div className="hidden md:flex md:w-1/2 fixed right-0 top-0 h-screen bg-surface-container-low overflow-hidden border-l border-outline-variant">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, #bbc7df 0%, transparent 40%), radial-gradient(circle at 80% 70%, #fea619 0%, transparent 40%)", mixBlendMode: "multiply" }}></div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -619,7 +625,7 @@ export default function RegisterPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
 
-        <div className="absolute bottom-0 left-0 p-xl w-full">
+        <div className="absolute inset-0 flex flex-col justify-center p-xl">
           <div className="max-w-md">
             <span className="inline-block bg-secondary-container text-on-secondary-container font-label-md text-label-md px-sm py-xs rounded-full mb-md">
               Institutional Trust
@@ -630,12 +636,12 @@ export default function RegisterPage() {
             </p>
             <div className="flex gap-md">
               <div className="bg-surface-container-lowest/10 backdrop-blur-md border border-outline-variant/30 rounded-lg p-sm flex-1">
-                <div className="font-headline-sm text-headline-sm text-on-primary">12.5%</div>
-                <div className="font-label-md text-label-md text-surface-variant">Target APY</div>
+                <div className="font-headline-sm text-headline-sm text-on-primary">{platformStats.totalAUM >= 10000000 ? `₹${(platformStats.totalAUM / 10000000).toFixed(1)}Cr` : platformStats.totalAUM >= 100000 ? `₹${(platformStats.totalAUM / 100000).toFixed(1)}L` : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(platformStats.totalAUM)}</div>
+                <div className="font-label-md text-label-md text-surface-variant">Assets Managed</div>
               </div>
               <div className="bg-surface-container-lowest/10 backdrop-blur-md border border-outline-variant/30 rounded-lg p-sm flex-1">
-                <div className="font-headline-sm text-headline-sm text-on-primary">$500M+</div>
-                <div className="font-label-md text-label-md text-surface-variant">Assets Managed</div>
+                <div className="font-headline-sm text-headline-sm text-on-primary">{platformStats.totalUsers.toLocaleString('en-IN')}+</div>
+                <div className="font-label-md text-label-md text-surface-variant">Trusted Investors</div>
               </div>
             </div>
           </div>

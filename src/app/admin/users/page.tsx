@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import prisma from "@/lib/prisma";
-import KycDocsModal from "./KycDocsModal";
+import UserActionsDropdown from "./UserActionsDropdown";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +15,7 @@ export default async function AdminUsersPage() {
       kycStatus: true,
       walletBalance: true,
       createdAt: true,
+      isBlocked: true,
       kyc: {
         select: {
           panDocUrl: true,
@@ -80,6 +81,12 @@ export default async function AdminUsersPage() {
                   statusText = "Rejected";
                 }
 
+                if (user.isBlocked) {
+                  statusColor = "bg-error-container text-on-error-container";
+                  statusIcon = "block";
+                  statusText = "Blocked";
+                }
+
                 return (
                   <tr key={user.id} className="hover:bg-surface-container-low transition-colors h-[72px]">
                     <td className="p-4">
@@ -110,11 +117,12 @@ export default async function AdminUsersPage() {
                       </p>
                     </td>
                     <td className="p-4 text-right">
-                      <KycDocsModal 
-                        panDocUrl={user.kyc?.panDocUrl}
-                        aadhaarDocUrl={user.kyc?.aadhaarDocUrl}
-                        userName={user.name || user.email || 'User'}
-                      />
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/admin/users/${user.id}/documents`} className="inline-flex items-center justify-center px-4 py-2 border border-outline-variant text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg text-label-sm font-label-sm transition-colors" title="View User Documents">
+                          Documents
+                        </Link>
+                        <UserActionsDropdown userId={user.id} isBlocked={user.isBlocked} userName={user.name || user.email} />
+                      </div>
                     </td>
                   </tr>
                 );

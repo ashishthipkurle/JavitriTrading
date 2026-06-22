@@ -159,13 +159,6 @@ export default function WalletClient({
           </div>
         </div>
         <div className="flex items-center gap-unit-md w-full md:w-auto mt-4 md:mt-0">
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex-1 md:flex-none h-14 px-8 bg-secondary-container text-on-secondary-container font-label-md text-label-md rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity font-bold"
-          >
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
-            Add Money
-          </button>
           <button 
             onClick={() => setShowWithdrawModal(true)}
             className="flex-1 md:flex-none h-14 px-8 bg-surface-container-lowest text-primary border border-primary font-label-md text-label-md rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors font-bold"

@@ -16,8 +16,8 @@ export function PinGate({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // 5 minutes in milliseconds
-  const TIMEOUT_MS = 5 * 60 * 1000;
+  // 30 minutes in milliseconds
+  const TIMEOUT_MS = 30 * 60 * 1000;
 
   const checkLockState = useCallback(() => {
     const isUnlocked = sessionStorage.getItem('pinUnlocked') === 'true';
@@ -63,8 +63,8 @@ export function PinGate({ children }: { children: React.ReactNode }) {
     };
   }, [checkLockState, updateActivity]);
 
-  const handleUnlock = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUnlock = async (e?: React.FormEvent | React.KeyboardEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
     setError('');
     setIsLoading(true);
 
@@ -291,7 +291,15 @@ export function PinGate({ children }: { children: React.ReactNode }) {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleUnlock} className="space-y-6">
+          <div 
+            className="space-y-6" 
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleUnlock(e as any);
+              }
+            }}
+          >
             <div className="relative">
               <input
                 type="password"
@@ -307,7 +315,8 @@ export function PinGate({ children }: { children: React.ReactNode }) {
             </div>
 
             <button
-              type="submit"
+              type="button"
+              onClick={handleUnlock as any}
               disabled={isLoading}
               className="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-lg text-label-lg py-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-2 disabled:opacity-70 shadow-md shadow-primary/20"
             >
@@ -317,7 +326,7 @@ export function PinGate({ children }: { children: React.ReactNode }) {
                 <>Unlock <span className="material-symbols-outlined text-[20px]">lock_open</span></>
               )}
             </button>
-          </form>
+          </div>
         )}
 
         <button 

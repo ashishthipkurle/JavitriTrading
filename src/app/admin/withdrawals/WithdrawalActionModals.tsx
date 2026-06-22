@@ -8,9 +8,12 @@ interface WithdrawalActionModalsProps {
   amount: number;
   bankAccount: string | null;
   ifsc: string | null;
+  bankName?: string | null;
+  accountType?: string | null;
+  upiId?: string | null;
 }
 
-export default function WithdrawalActionModals({ withdrawalId, amount, bankAccount, ifsc }: WithdrawalActionModalsProps) {
+export default function WithdrawalActionModals({ withdrawalId, amount, bankAccount, ifsc, bankName, accountType, upiId }: WithdrawalActionModalsProps) {
   const router = useRouter();
   
   // Modals state
@@ -224,12 +227,24 @@ export default function WithdrawalActionModals({ withdrawalId, amount, bankAccou
                     <h3 className="text-label-md font-label-md text-primary mb-3">Client Bank Details</h3>
                     <div className="grid grid-cols-1 gap-2 text-body-sm font-body-sm">
                       <div className="flex justify-between">
+                        <span className="text-on-surface-variant">Bank Name:</span>
+                        <span className="font-medium text-primary">{bankName || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-on-surface-variant">Account Type:</span>
+                        <span className="font-medium text-primary">{accountType || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
                         <span className="text-on-surface-variant">Account Number:</span>
                         <span className="font-data-mono font-medium text-primary">{bankAccount || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-on-surface-variant">IFSC Code:</span>
                         <span className="font-data-mono font-medium text-primary">{ifsc || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-on-surface-variant">UPI ID:</span>
+                        <span className="font-medium text-primary">{upiId || 'N/A'}</span>
                       </div>
                     </div>
                   </div>
