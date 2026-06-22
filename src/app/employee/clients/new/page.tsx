@@ -8,7 +8,7 @@ import CreateClientForm from "./CreateClientForm";
 
 export const dynamic = 'force-dynamic';
 
-export default async function AssignClientPage({ searchParams }: { searchParams: { q?: string } }) {
+export default async function AssignClientPage({ searchParams }: { searchParams: { q?: string; tab?: string } }) {
   const user = await getAuthUser();
   if (!user || user.role !== "EMPLOYEE") return null;
 
