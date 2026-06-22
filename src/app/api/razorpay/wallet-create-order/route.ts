@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       notes: {
         type: 'WALLET_DEPOSIT',
         userId: depositUserId,
-        addedBy: targetClientId ? user.id : undefined,
+        addedBy: targetClientId ? user.id : null,
       },
     });
 
