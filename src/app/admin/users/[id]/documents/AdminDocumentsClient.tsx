@@ -9,12 +9,16 @@ export default function AdminDocumentsClient({
   user, 
   fdPlans, 
   panDocUrl, 
-  aadhaarDocUrl 
+  aadhaarDocUrl,
+  backUrl = "/admin/users",
+  backLabel = "Back to Users",
 }: { 
   user: any;
   fdPlans: any[];
   panDocUrl?: string | null;
   aadhaarDocUrl?: string | null;
+  backUrl?: string;
+  backLabel?: string;
 }) {
   const [activeTab, setActiveTab] = useState<"form" | "pan" | "aadhaar">("form");
 
@@ -56,11 +60,11 @@ export default function AdminDocumentsClient({
           <p className="text-body-md text-on-surface-variant mt-1">Viewing documents for {user.name}</p>
         </div>
         <Link 
-          href="/admin/users" 
+          href={backUrl} 
           className="bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors px-4 py-2 rounded-lg text-label-md font-label-md flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          Back to Users
+          {backLabel}
         </Link>
       </div>
 

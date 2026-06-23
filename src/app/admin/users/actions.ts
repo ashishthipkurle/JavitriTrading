@@ -91,3 +91,40 @@ export async function deleteUser(userId: string) {
     return { error: err.message || "Failed to delete user." };
   }
 }
+
+export async function approveKyc(userId: string) {
+  await verifyAdmin();
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { kycStatus: "APPROVED" }
+    });
+    revalidatePath("/admin/users");
+    revalidatePath("/admin/employees");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message };
+  }
+}
+
+export async function rejectKyc(userId: string, reason?: string) {
+  await verifyAdmin();
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { kycStatus: "REJECTED" }
+    });
+    // Store rejection note if provided
+    if (reason) {
+      await prisma.kYC.updateMany({
+        where: { userId },
+        data: { rejectionNote: reason }
+      });
+    }
+    revalidatePath("/admin/users");
+    revalidatePath("/admin/employees");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message };
+  }
+}

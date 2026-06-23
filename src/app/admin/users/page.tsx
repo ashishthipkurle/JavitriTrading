@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import prisma from "@/lib/prisma";
 import UserActionsDropdown from "./UserActionsDropdown";
+import KycStatusBadge from "./KycStatusBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -51,8 +52,8 @@ export default async function AdminUsersPage() {
       </header>
 
       {/* Users Table Card */}
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex-grow shadow-[0px_4px_12px_rgba(10,22,40,0.04)]">
-        <div className="overflow-x-auto">
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant flex-grow shadow-[0px_4px_12px_rgba(10,22,40,0.04)]">
+        <div className="">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-surface-container border-b border-outline-variant">
@@ -66,26 +67,6 @@ export default async function AdminUsersPage() {
             <tbody className="divide-y divide-outline-variant">
               {users.map((user) => {
                 const initials = (user.name || user.email || 'U').substring(0, 2).toUpperCase();
-                
-                let statusColor = "bg-secondary-container/20 text-on-secondary-container";
-                let statusIcon = "pending";
-                let statusText = "Pending KYC";
-
-                if (user.kycStatus === "APPROVED") {
-                  statusColor = "bg-[#009668]/10 text-[#005236]";
-                  statusIcon = "check_circle";
-                  statusText = "Verified";
-                } else if (user.kycStatus === "REJECTED") {
-                  statusColor = "bg-[#ba1a1a]/10 text-[#93000a]";
-                  statusIcon = "error";
-                  statusText = "Rejected";
-                }
-
-                if (user.isBlocked) {
-                  statusColor = "bg-error-container text-on-error-container";
-                  statusIcon = "block";
-                  statusText = "Blocked";
-                }
 
                 return (
                   <tr key={user.id} className="hover:bg-surface-container-low transition-colors h-[72px]">
@@ -101,10 +82,14 @@ export default async function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-label-sm font-label-sm gap-1 ${statusColor}`}>
-                        <span className="material-symbols-outlined text-[14px]">{statusIcon}</span>
-                        {statusText}
-                      </span>
+                      {user.isBlocked ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-label-sm font-label-sm gap-1 bg-error-container text-on-error-container">
+                          <span className="material-symbols-outlined text-[14px]">block</span>
+                          Blocked
+                        </span>
+                      ) : (
+                        <KycStatusBadge userId={user.id} kycStatus={user.kycStatus} userName={user.name || user.email} />
+                      )}
                     </td>
                     <td className="p-4 text-right">
                       <p className="text-data-mono font-data-mono text-primary">
@@ -121,7 +106,7 @@ export default async function AdminUsersPage() {
                         <Link href={`/admin/users/${user.id}/documents`} className="inline-flex items-center justify-center px-4 py-2 border border-outline-variant text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg text-label-sm font-label-sm transition-colors" title="View User Documents">
                           Documents
                         </Link>
-                        <UserActionsDropdown userId={user.id} isBlocked={user.isBlocked} userName={user.name || user.email} />
+                        <UserActionsDropdown userId={user.id} isBlocked={user.isBlocked} userName={user.name || user.email} kycStatus={user.kycStatus} />
                       </div>
                     </td>
                   </tr>

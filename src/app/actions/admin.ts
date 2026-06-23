@@ -115,6 +115,12 @@ export async function getEmployees() {
       phone: true,
       createdAt: true,
       kycStatus: true,
+      kyc: {
+        select: {
+          panDocUrl: true,
+          aadhaarDocUrl: true,
+        }
+      },
       _count: {
         select: { clients: true },
       },

@@ -1,5 +1,7 @@
 import { getEmployees } from "@/app/actions/admin";
-import { UpgradeUserForm, DemoteButton } from "./EmployeeActions";
+import { UpgradeUserForm, EmployeeActionsDropdown } from "./EmployeeActions";
+import Link from "next/link";
+import KycStatusBadge from "@/app/admin/users/KycStatusBadge";
 
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +33,7 @@ export default async function AdminEmployeesPage() {
       <UpgradeUserForm />
 
       {/* Employees Table */}
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-[0px_4px_12px_rgba(10,22,40,0.04)] mt-unit-lg">
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(10,22,40,0.04)] mt-unit-lg">
         <div className="p-4 border-b border-outline-variant bg-surface-container flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-[20px]">groups</span>
           <h3 className="text-label-lg font-label-lg text-on-surface font-bold">Active Employees</h3>
@@ -48,7 +50,7 @@ export default async function AdminEmployeesPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="">
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr className="bg-surface-container-lowest border-b border-outline-variant">
@@ -69,20 +71,6 @@ export default async function AdminEmployeesPage() {
                     .toUpperCase()
                     .slice(0, 2);
 
-                  const kycColor =
-                    emp.kycStatus === "APPROVED"
-                      ? "bg-[#009668]/10 text-[#005236]"
-                      : emp.kycStatus === "REJECTED"
-                      ? "bg-[#ba1a1a]/10 text-[#93000a]"
-                      : "bg-secondary-container/20 text-on-secondary-container";
-
-                  const kycIcon =
-                    emp.kycStatus === "APPROVED"
-                      ? "check_circle"
-                      : emp.kycStatus === "REJECTED"
-                      ? "error"
-                      : "pending";
-
                   return (
                     <tr key={emp.id} className="hover:bg-surface-container-low transition-colors h-[72px]">
                       <td className="p-4">
@@ -98,10 +86,7 @@ export default async function AdminEmployeesPage() {
                       </td>
                       <td className="p-4 text-body-sm font-body-sm text-on-surface-variant">{emp.phone}</td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-label-sm font-label-sm gap-1 ${kycColor}`}>
-                          <span className="material-symbols-outlined text-[14px]">{kycIcon}</span>
-                          {emp.kycStatus}
-                        </span>
+                        <KycStatusBadge userId={emp.id} kycStatus={emp.kycStatus} userName={emp.name || emp.email} />
                       </td>
                       <td className="p-4 text-center">
                         <span className="text-data-mono font-data-mono text-primary">{emp._count.clients}</span>
@@ -114,7 +99,12 @@ export default async function AdminEmployeesPage() {
                         })}
                       </td>
                       <td className="p-4 text-right">
-                        <DemoteButton userId={emp.id} userName={emp.name || emp.email} />
+                        <div className="flex items-center justify-end gap-2">
+                          <Link href={`/admin/employees/${emp.id}/documents`} className="inline-flex items-center justify-center px-4 py-2 border border-outline-variant text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg text-label-sm font-label-sm transition-colors" title="View Employee Documents">
+                            Documents
+                          </Link>
+                          <EmployeeActionsDropdown userId={emp.id} userName={emp.name || emp.email} kycStatus={emp.kycStatus} />
+                        </div>
                       </td>
                     </tr>
                   );
