@@ -578,7 +578,7 @@ export default function RegisterPage() {
         <header className="p-lg flex items-center justify-between">
           <div className="flex items-center gap-xs">
             <span className="material-symbols-outlined text-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance</span>
-            <span className="font-headline-md text-headline-md text-primary tracking-tight">Javitri Trading</span>
+            <span className="font-headline-md text-headline-md text-primary tracking-tight">Javitri Trading Service</span>
           </div>
           <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="/login">Log In Instead</Link>
         </header>
@@ -610,7 +610,7 @@ export default function RegisterPage() {
         </main>
 
         <footer className="p-lg text-center mt-auto">
-          <p className="font-body-sm text-body-sm text-outline">© 2024 Javitri Trading. Institutional Grade Security.</p>
+          <p className="font-body-sm text-body-sm text-outline">© 2024 Javitri Trading Service. Institutional Grade Security.</p>
         </footer>
       </div>
 

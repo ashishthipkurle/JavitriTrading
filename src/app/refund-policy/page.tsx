@@ -2,8 +2,8 @@ import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 
 export const metadata = {
-  title: 'Refund Policy | Javitri Trading',
-  description: 'Refund Policy for Javitri Trading.',
+  title: 'Refund Policy | Javitri Trading Service',
+  description: 'Refund Policy for Javitri Trading Service.',
 };
 
 export default function RefundPolicyPage() {
@@ -13,7 +13,7 @@ export default function RefundPolicyPage() {
       <header className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
           <Link href="/" className="text-headline-sm font-headline-sm font-bold text-primary">
-            Javitri Trading
+            Javitri Trading Service
           </Link>
           <BackButton />
         </div>
@@ -30,7 +30,7 @@ export default function RefundPolicyPage() {
           <section className="mb-8">
             <h2 className="text-title-lg font-title-lg text-primary mb-3">1. Investment Lock-in Period</h2>
             <p className="text-body-md font-body-md mb-4 leading-relaxed text-on-surface-variant">
-              All Fixed Deposit (FD) investments made through Javitri Trading are subject to the terms and tenure specified at the time of purchase. Premature withdrawal policies may apply, and breaking an investment before maturity could result in a penalty on the accrued daily returns.
+              All Fixed Deposit (FD) investments made through Javitri Trading Service are subject to the terms and tenure specified at the time of purchase. Premature withdrawal policies may apply, and breaking an investment before maturity could result in a penalty on the accrued daily returns.
             </p>
           </section>
 

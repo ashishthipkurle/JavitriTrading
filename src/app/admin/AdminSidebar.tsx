@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSidebar } from '@/components/SidebarContext';
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const { isOpen, setIsOpen } = useSidebar();
 
   const navItems = [
     { href: '/admin', icon: 'analytics', label: 'Analytics' },
@@ -19,7 +21,16 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-[260px] z-40 bg-surface-container-lowest border-r border-outline-variant flex flex-col p-unit-md gap-unit-sm hidden md:flex">
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm" 
+          onClick={() => setIsOpen(false)} 
+        />
+      )}
+
+      <aside className={`fixed left-0 top-0 h-full w-[260px] z-40 bg-surface-container-lowest border-r border-outline-variant flex flex-col p-unit-md gap-unit-sm transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       
       {/* Header */}
       <div className="flex items-center gap-unit-sm mb-unit-lg px-unit-sm">
@@ -40,6 +51,7 @@ export default function AdminSidebar() {
             <Link 
               key={item.href}
               href={item.href} 
+              onClick={() => setIsOpen(false)}
               className={`flex items-center gap-unit-sm p-unit-sm rounded-lg text-label-md font-label-md transition-all ${
                 isActive 
                   ? 'bg-primary text-on-primary font-bold brightness-90' 
@@ -57,6 +69,7 @@ export default function AdminSidebar() {
         <div className="mt-auto">
           <Link 
             href="/admin/settings" 
+            onClick={() => setIsOpen(false)}
             className={`flex items-center gap-unit-sm p-unit-sm rounded-lg text-label-md font-label-md transition-all ${
               pathname.startsWith('/admin/settings') 
                 ? 'bg-primary text-on-primary font-bold brightness-90' 
@@ -71,5 +84,6 @@ export default function AdminSidebar() {
         </div>
       </nav>
     </aside>
+    </>
   );
 }

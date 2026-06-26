@@ -97,7 +97,7 @@ export default function NewInvestmentWizard({ plans, popularPlanId, initialPlanI
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'Javitri Trading',
+        name: 'Javitri Trading Service',
         description: `Investment: ${orderData.planName}`,
         order_id: orderData.orderId,
         prefill: {

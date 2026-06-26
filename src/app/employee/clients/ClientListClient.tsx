@@ -92,7 +92,7 @@ export default function ClientListClient({ clients }: { clients: any[] }) {
           key: orderData.keyId,
           amount: orderData.amount,
           currency: orderData.currency,
-          name: 'Javitri Trading',
+          name: 'Javitri Trading Service',
           description: `Wallet Top Up for ${selectedClient.name}`,
           order_id: orderData.orderId,
           prefill: {

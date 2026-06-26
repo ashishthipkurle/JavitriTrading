@@ -6,6 +6,8 @@ import { getAuthUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 import { PinGate } from "@/components/PinGate";
+import { SidebarProvider } from "@/components/SidebarContext";
+import MobileMenuButton from "@/components/MobileMenuButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,14 +32,17 @@ export default async function EmployeeLayout({
 
   return (
     <PinGate>
-      <div className="bg-surface text-on-surface font-body-md antialiased flex min-h-screen">
+      <SidebarProvider>
+        <div className="bg-surface text-on-surface font-body-md antialiased flex min-h-screen">
         <EmployeeSidebar user={user} />
 
         {/* Main Content Area */}
         <main className="flex-1 md:ml-[260px] flex flex-col w-full">
           {/* Top Bar */}
           <header className="h-16 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between px-margin-desktop sticky top-0 z-30">
-            <div></div>
+            <div className="flex items-center gap-2">
+              <MobileMenuButton />
+            </div>
             <div className="flex items-center gap-gutter">
               <div className="relative hidden sm:block">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
@@ -54,6 +59,7 @@ export default async function EmployeeLayout({
           </div>
         </main>
       </div>
+      </SidebarProvider>
     </PinGate>
   );
 }

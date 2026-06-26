@@ -245,7 +245,7 @@ function ForgotPasswordForm() {
           <div className="w-[32px] h-[32px] rounded-DEFAULT bg-secondary-container flex items-center justify-center">
             <span className="material-symbols-outlined text-on-secondary-container text-[20px]">account_balance</span>
           </div>
-          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Javitri Trading</span>
+          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Javitri Trading Service</span>
         </div>
       </aside>
     </div>

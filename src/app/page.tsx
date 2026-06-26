@@ -3,8 +3,11 @@ import prisma from '@/lib/prisma';
 import PricingCards from '@/components/PricingCards';
 import UserMenu from '@/components/UserMenu';
 import ClearPinSession from '@/components/ClearPinSession';
+import HeroBackground from '@/components/HeroBackground';
+import HeroChart from '@/components/HeroChart';
 import { getAuthUser } from '@/lib/auth';
 import LandingNavLinks from '@/components/LandingNavLinks';
+import ReadMoreAbout from '@/components/ReadMoreAbout';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,8 +68,10 @@ export default async function LandingPage() {
       {/* TopNavBar Component */}
       <header className="bg-surface text-primary border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-sm md:px-md h-16">
         <div className="max-w-container-max mx-auto w-full flex justify-between items-center">
-          <div className="flex items-center">
-            <span className="text-headline-md font-headline-md font-bold text-primary">Javitri Trading</span>
+          <div className="flex items-center gap-3 min-w-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icon.png" alt="Javitri Trading Logo" className="h-14 md:h-[76px] w-auto object-contain py-1" />
+            <span className="hidden md:inline text-title-md md:text-headline-md font-bold text-gray-900 truncate">Javitri Trading Service</span>
           </div>
           <LandingNavLinks />
           <div className="flex items-center space-x-sm">
@@ -75,7 +80,7 @@ export default async function LandingPage() {
             ) : (
               <>
                 <Link className="text-primary-container font-label-md text-label-md hover:opacity-80 transition-opacity" href="/login">Login</Link>
-                <Link className="bg-primary-container text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" href="/register">Get Started</Link>
+                <Link className="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-label-md text-label-md px-4 py-2 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-opacity" href="/register">Get Started</Link>
               </>
             )}
           </div>
@@ -84,70 +89,86 @@ export default async function LandingPage() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative w-full flex items-center min-h-[calc(85vh-64px)] overflow-hidden pt-xl pb-xl md:py-0">
-          {/* Image covering right half */}
-          <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 h-full z-0 opacity-10 md:opacity-100">
-            {/* Gradient overlay for smooth blending on the left edge */}
-            <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-surface to-transparent z-10 hidden md:block"></div>
-            {/* Gradient overlay for bottom edge on mobile */}
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-surface to-transparent z-10 md:hidden"></div>
-            <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-surface to-transparent z-10 md:hidden"></div>
-
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt="Trading Dashboard Mockup"
-              className="w-full h-full object-cover object-left"
-              src={getContent('hero_image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAVKPY5eH784eI31xklUPfom8tf-wr_Oc-h1ojHGGvyFv_9Jt68DDvyRsVhpiArcTtrcWHjIF2R9EXBiridWY5kiLgDd7Z3ZIaWvH0y3wWChis3VmigRT-QtRVJv8lbWvWh86H3Tgbob8mPdRZE6LPmIneqYwJybj1_kmOkRRAppTXlPbRV48wJbYqCCzYH_cqrqlJnvr6EtLaqOZjz_XkbPU-9zhQzFXD5M3sTcDoNX742GNxgA4-Wkpf3SW0YgQP1ag-H-5Gz8U')}
-            />
+        <section className="relative w-full flex items-center min-h-[calc(75vh-64px)] overflow-hidden pt-xl pb-xl md:py-0 bg-[#0a1628]">
+          <HeroBackground />
+          
+          <div className="absolute right-0 top-0 bottom-0 w-full md:w-[60%] h-full z-0 opacity-20 md:opacity-100 hidden md:block">
+            <HeroChart />
           </div>
 
           <div className="max-w-container-max mx-auto px-sm md:px-md w-full relative z-10 flex">
             <div className="w-full md:w-1/2 flex flex-col items-start space-y-md md:pr-xl">
-              <span className="text-label-md font-label-md text-secondary-container uppercase tracking-wider">
+              <span className="text-label-md font-label-md text-amber-500 uppercase tracking-wider">
                 {getContent('hero_badge', 'Premium Investment Platform')}
               </span>
-              <h1 className="text-headline-xl-mobile font-headline-xl-mobile md:text-headline-xl md:font-headline-xl text-on-surface max-w-2xl leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-bold md:text-headline-xl md:font-headline-xl text-white max-w-2xl leading-tight">
                 {getContent('hero_title', 'Grow Your Wealth With Expert Trading Signals & Fixed Returns')}
               </h1>
-              <p className="text-body-lg font-body-lg text-on-surface-variant max-w-xl">
+              <p className="text-base sm:text-lg md:text-body-lg md:font-body-lg text-gray-300 max-w-xl">
                 {getContent('hero_subtitle', 'Experience institutional-grade financial growth. Join thousands of investors leveraging our proprietary algorithms and expert advisory for secure, consistent yield.')}
               </p>
-              <div className="flex flex-wrap gap-sm pt-sm">
+              <div className="flex flex-wrap md:flex-nowrap gap-3 pt-sm w-full md:w-max">
                 {user ? (
-                  <Link href="/dashboard/investments/new" className="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgba(254,166,25,0.2)]">
+                  <Link href="/dashboard/investments/new" className="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-label-md text-label-md px-4 md:px-5 py-3 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.5)] whitespace-nowrap">
                     Start Investing
                     <span className="material-symbols-outlined text-[18px]">trending_up</span>
                   </Link>
                 ) : (
-                  <Link href="/register" className="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgba(254,166,25,0.2)]">
+                  <Link href="/register" className="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-label-md text-label-md px-4 md:px-5 py-3 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.5)] whitespace-nowrap">
                     Create Free Account
                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                   </Link>
                 )}
-                <a href="https://t.me/Javitritradingservice" target="_blank" rel="noopener noreferrer" className="border-2 border-primary-container text-primary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-primary-container hover:text-on-primary transition-all flex items-center gap-2">
+                <a href="https://t.me/Javitritradingservice" target="_blank" rel="noopener noreferrer" className="bg-white/5 backdrop-blur-md border border-white/20 text-white font-label-md text-label-md px-4 md:px-5 py-3 rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
                   <span className="material-symbols-outlined text-[18px]">send</span>
                   Join Telegram
                 </a>
+                <a href="https://join.dhan.co/?invite=QSSJH84387" target="_blank" rel="noopener noreferrer" className="bg-white/5 backdrop-blur-md border border-white/20 text-white font-label-md text-label-md px-4 md:px-5 py-3 rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                  <span className="material-symbols-outlined text-[18px]">account_balance</span>
+                  Demat Account
+                </a>
               </div>
-              <div className="flex items-center space-x-lg pt-lg mt-md border-t border-outline-variant w-full max-w-xl">
+              <div className="flex flex-wrap items-center justify-between md:justify-start gap-y-4 md:space-x-lg pt-lg mt-md border-t border-white/10 w-full max-w-xl">
                 <div>
-                  <div className="text-headline-sm font-headline-sm text-on-surface">{getContent('stat_1_value', '15K+')}</div>
-                  <div className="text-body-sm font-body-sm text-on-surface-variant">{getContent('stat_1_label', 'Active Investors')}</div>
+                  <div className="text-headline-sm font-headline-sm text-white">{getContent('stat_1_value', '15K+')}</div>
+                  <div className="text-body-sm font-body-sm text-gray-400">{getContent('stat_1_label', 'Active Investors')}</div>
                 </div>
-                <div className="w-px h-8 bg-outline-variant"></div>
+                <div className="w-px h-8 bg-white/10"></div>
                 <div>
-                  <div className="text-headline-sm font-headline-sm text-on-surface">{getContent('stat_2_value', '₹2.5Cr+')}</div>
-                  <div className="text-body-sm font-body-sm text-on-surface-variant">{getContent('stat_2_label', 'Total Payouts')}</div>
+                  <div className="text-headline-sm font-headline-sm text-white">{getContent('stat_2_value', '₹2.5Cr+')}</div>
+                  <div className="text-body-sm font-body-sm text-gray-400">{getContent('stat_2_label', 'Total Payouts')}</div>
                 </div>
-                <div className="w-px h-8 bg-outline-variant"></div>
+                <div className="w-px h-8 bg-white/10"></div>
                 <div>
-                  <div className="text-headline-sm font-headline-sm text-on-surface">{getContent('stat_3_value', '98%')}</div>
-                  <div className="text-body-sm font-body-sm text-on-surface-variant">{getContent('stat_3_label', 'Signal Accuracy')}</div>
+                  <div className="text-headline-sm font-headline-sm text-white">{getContent('stat_3_value', '98%')}</div>
+                  <div className="text-body-sm font-body-sm text-gray-400">{getContent('stat_3_label', 'Client Retention')}</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
+
+        {/* Trust Ticker */}
+        <div className="w-full overflow-hidden bg-surface border-y border-outline-variant py-4 relative z-20">
+          <div className="flex whitespace-nowrap animate-scroll-left w-max">
+            {/* Group 1 */}
+            <div className="flex items-center gap-12 px-6">
+              <div className="flex items-center gap-2 text-on-surface-variant font-body-md"><span className="material-symbols-outlined text-secondary-container">verified_user</span> SEBI Registered</div>
+              <div className="flex items-center gap-2 text-on-surface font-body-md text-xl font-bold">ANGEL ONE</div>
+              <div className="flex items-center gap-2 text-on-surface-variant font-body-md"><span className="material-symbols-outlined text-secondary-container">lock</span> SSL Secured</div>
+              <div className="flex items-center gap-2 text-on-surface font-body-md text-xl font-bold">DHAN</div>
+              <div className="flex items-center gap-2 text-on-surface-variant font-body-md"><span className="material-symbols-outlined text-secondary-container">workspace_premium</span> ISO 27001</div>
+            </div>
+            {/* Group 2 (Duplicate for seamless loop) */}
+            <div className="flex items-center gap-12 px-6">
+              <div className="flex items-center gap-2 text-on-surface-variant font-body-md"><span className="material-symbols-outlined text-secondary-container">verified_user</span> SEBI Registered</div>
+              <div className="flex items-center gap-2 text-on-surface font-body-md text-xl font-bold">ANGEL ONE</div>
+              <div className="flex items-center gap-2 text-on-surface-variant font-body-md"><span className="material-symbols-outlined text-secondary-container">lock</span> SSL Secured</div>
+              <div className="flex items-center gap-2 text-on-surface font-body-md text-xl font-bold">DHAN</div>
+              <div className="flex items-center gap-2 text-on-surface-variant font-body-md"><span className="material-symbols-outlined text-secondary-container">workspace_premium</span> ISO 27001</div>
+            </div>
+          </div>
+        </div>
 
         {/* About Section */}
         <section className="bg-surface-container-lowest py-xl border-y border-outline-variant" id="about">
@@ -175,35 +196,14 @@ export default async function LandingPage() {
               <h2 className="text-headline-md-mobile font-headline-md-mobile md:text-headline-md md:font-headline-md text-on-surface leading-snug">
                 {getContent('about_title', "Welcome to Javitri Trading Service — India's Trusted Stock Market Advisory")}
               </h2>
-              <div className="space-y-6">
-                <p className="text-title-md font-title-md text-on-surface">
-                  {getContent('about_description_1', 'Javitri Trading Service is a SEBI-registered stock market research, analysis, and advisory firm with over 10 years of professional experience in the Indian financial markets. Led by a dedicated team of 7 expert analysts and traders, we specialize in delivering accurate market research and real-time actionable insights to help investors make smarter, more confident decisions.')}
-                </p>
-                <div className="w-16 h-1 bg-primary-container rounded-full"></div>
-                <p className="text-body-lg font-body-lg text-on-surface-variant">
-                  {getContent('about_description_2', "We are proud to be an official business partner of Angel One and Dhan — two of India's most trusted and leading stock broking platforms — ensuring our clients always have access to the best tools, technology, and execution infrastructure available in the market today.")}
-                </p>
-                <div className="bg-surface-container-low p-md rounded-xl border border-outline-variant/50 flex items-start gap-sm">
-                  <span className="material-symbols-outlined text-secondary-container mt-1">groups</span>
-                  <p className="text-body-md font-body-md text-on-surface-variant">
-                    {getContent('about_description_3', "With a thriving community of over 1,000 active members on our Telegram channel, we provide real-time buy and sell signals directly to your fingertips — so you never miss a profitable opportunity in the market.")}
-                  </p>
-                </div>
-                <div className="bg-primary-container/10 p-lg rounded-xl border border-primary-container/20 space-y-3">
-                  <p className="text-body-md font-body-md text-on-surface-variant">
-                    {getContent('about_description_4', "We believe smart investing should be simple, safe, and rewarding for everyone. That's why we've introduced our exclusive Daily Income Investment Scheme — a structured plan where you invest once and earn daily returns, managed entirely by our expert trading team. Whether you're a beginner starting with ₹5,000 or a seasoned investor looking at our ₹1 Lakh Elite Plan, we have a strategy tailored just for you.")}
-                  </p>
-                  <p className="text-body-md font-body-md text-on-surface-variant">
-                    {getContent('about_description_5', "Our plans offer expected daily returns starting from ₹200 and going up to ₹6,000+, with full live market support, daily updates, and transparent reporting at every step.")}
-                  </p>
-                </div>
-                <div className="flex items-center gap-sm bg-secondary-container/10 p-md rounded-xl border border-secondary-container/20">
-                  <span className="material-symbols-outlined text-secondary-container">trending_up</span>
-                  <p className="text-title-md font-title-md text-secondary-container">
-                    {getContent('about_description_6', "Join thousands of smart investors who trust Javitri Trading Service to grow their wealth — one trading day at a time.")}
-                  </p>
-                </div>
-              </div>
+              <ReadMoreAbout 
+                desc1={getContent('about_description_1', 'Javitri Trading Service is a SEBI-registered stock market research, analysis, and advisory firm with over 10 years of professional experience in the Indian financial markets. Led by a dedicated team of 7 expert analysts and traders, we specialize in delivering accurate market research and real-time actionable insights to help investors make smarter, more confident decisions.')}
+                desc2={getContent('about_description_2', "We are proud to be an official business partner of Angel One and Dhan — two of India's most trusted and leading stock broking platforms — ensuring our clients always have access to the best tools, technology, and execution infrastructure available in the market today.")}
+                desc3={getContent('about_description_3', "With a thriving community of over 1,000 active members on our Telegram channel, we provide real-time buy and sell signals directly to your fingertips — so you never miss a profitable opportunity in the market.")}
+                desc4={getContent('about_description_4', "We believe smart investing should be simple, safe, and rewarding for everyone. That's why we've introduced our exclusive Daily Income Investment Scheme — a structured plan where you invest once and earn daily returns, managed entirely by our expert trading team. Whether you're a beginner starting with ₹5,000 or a seasoned investor looking at our ₹1 Lakh Elite Plan, we have a strategy tailored just for you.")}
+                desc5={getContent('about_description_5', "Our plans offer expected daily returns starting from ₹200 and going up to ₹6,000+, with full live market support, daily updates, and transparent reporting at every step.")}
+                desc6={getContent('about_description_6', "Join thousands of smart investors who trust Javitri Trading Service to grow their wealth — one trading day at a time.")}
+              />
             </div>
           </div>
         </section>
@@ -352,7 +352,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-lg">
             {/* Company Info */}
             <div className="md:col-span-1 space-y-md">
-              <span className="text-headline-md font-headline-md font-bold text-on-primary-container block">Javitri Trading</span>
+              <span className="text-headline-md font-headline-md font-bold text-on-primary-container block">Javitri Trading Service</span>
               <p className="text-body-sm font-body-sm opacity-70 leading-relaxed">
                 India&apos;s trusted platform for expert trading signals and fixed-return investment plans. Grow your wealth with confidence.
               </p>
@@ -420,7 +420,7 @@ export default async function LandingPage() {
         {/* Bottom Bar */}
         <div className="border-t border-on-primary-container/10">
           <div className="max-w-container-max mx-auto px-sm md:px-md py-md flex flex-col md:flex-row justify-between items-center gap-xs">
-            <span className="text-body-sm font-body-sm opacity-50">© {new Date().getFullYear()} Javitri Trading. All rights reserved.</span>
+            <span className="text-body-sm font-body-sm opacity-50">© {new Date().getFullYear()} Javitri Trading Service. All rights reserved.</span>
             <div className="flex items-center gap-4">
               <Link href="/developer" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-primary transition-all flex items-center gap-1 border border-outline-variant/30 bg-surface-container-low px-2 py-1 rounded-md">
                 <span className="material-symbols-outlined text-[14px]">code</span>

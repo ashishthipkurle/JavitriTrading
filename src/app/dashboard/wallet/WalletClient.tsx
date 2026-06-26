@@ -46,7 +46,7 @@ export default function WalletClient({
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'Javitri Trading',
+        name: 'Javitri Trading Service',
         description: 'Wallet Top Up',
         order_id: orderData.orderId,
         prefill: {

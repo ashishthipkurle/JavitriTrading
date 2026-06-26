@@ -110,7 +110,7 @@ export default async function EmployeeDashboard() {
                       )}
                     </td>
                     <td className="px-unit-lg py-4">
-                      <Link href={`/employee/clients/${client.id}/invest`} className="text-label-sm font-label-sm text-primary border border-outline-variant px-3 py-1 rounded hover:bg-surface-container-low transition-colors">
+                      <Link href={`/employee/clients/${client.id}/invest`} className="inline-block whitespace-nowrap text-label-sm font-label-sm text-primary border border-outline-variant px-3 py-1 rounded hover:bg-surface-container-low transition-colors text-center">
                         Create FD
                       </Link>
                     </td>

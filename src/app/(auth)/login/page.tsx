@@ -52,7 +52,12 @@ function LoginForm() {
       });
 
       if (!pinRes.ok && !pinRes.ok /* just to keep structure but we handle it via JSON */) {
-        const pinData = await pinRes.json();
+        let pinData: any;
+        try {
+          pinData = await pinRes.json();
+        } catch (e) {
+          pinData = { error: `Server returned ${pinRes.status}: ${pinRes.statusText}` };
+        }
         
         if (pinRes.status === 200 && pinData.needsSetup) {
            // handled below
@@ -75,8 +80,9 @@ function LoginForm() {
 
       router.push("/dashboard");
       router.refresh();
-    } catch (err) {
-      setError("An unexpected error occurred");
+    } catch (err: any) {
+      console.error("Login Error:", err);
+      setError(err?.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -208,7 +214,7 @@ function LoginForm() {
           <div className="w-[32px] h-[32px] rounded-DEFAULT bg-secondary-container flex items-center justify-center">
             <span className="material-symbols-outlined text-on-secondary-container text-[20px]">account_balance</span>
           </div>
-          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Javitri Trading</span>
+          <span className="font-headline-md text-headline-md text-surface-container-lowest tracking-tight">Javitri Trading Service</span>
         </div>
         
         <div className="relative z-10 mb-xl max-w-[80%]">

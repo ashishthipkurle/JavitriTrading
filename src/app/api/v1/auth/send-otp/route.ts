@@ -46,12 +46,12 @@ export async function POST(req: Request) {
 
     // Send the email using Nodemailer
     const mailOptions = {
-      from: process.env.SMTP_FROM || '"Javitri Trading" <noreply@javitritrading.com>',
+      from: process.env.SMTP_FROM || '"Javitri Trading Service" <noreply@javitritrading.com>',
       to: email,
       subject: 'Your Verification Code',
       html: `
         <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto;">
-          <h2>Welcome to Javitri Trading</h2>
+          <h2>Welcome to Javitri Trading Service</h2>
           <p>Please use the following verification code to complete your registration.</p>
           <div style="background-color: #f4f4f4; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
             <h1 style="letter-spacing: 5px; margin: 0; color: #000;">${otpCode}</h1>

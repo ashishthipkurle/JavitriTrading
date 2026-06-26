@@ -2,8 +2,8 @@ import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 
 export const metadata = {
-  title: 'About Us | Javitri Trading',
-  description: 'About Javitri Trading.',
+  title: 'About Us | Javitri Trading Service',
+  description: 'About Javitri Trading Service.',
 };
 
 export default function AboutUsPage() {
@@ -13,7 +13,7 @@ export default function AboutUsPage() {
       <header className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
           <Link href="/" className="text-headline-sm font-headline-sm font-bold text-primary">
-            Javitri Trading
+            Javitri Trading Service
           </Link>
           <BackButton />
         </div>
@@ -22,7 +22,7 @@ export default function AboutUsPage() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-20">
         <div className="mb-10 text-center">
-          <h1 className="text-headline-lg font-headline-lg text-primary mb-4">About Javitri Trading</h1>
+          <h1 className="text-headline-lg font-headline-lg text-primary mb-4">About Javitri Trading Service</h1>
           <p className="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto">
             Empowering individuals to secure their financial future through expert guidance, high-yield fixed return plans, and unparalleled market expertise.
           </p>
@@ -32,7 +32,7 @@ export default function AboutUsPage() {
           <section className="mb-10 bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 shadow-sm">
             <h2 className="text-title-lg font-title-lg text-primary mb-4">Our Mission</h2>
             <p className="text-body-md font-body-md leading-relaxed text-on-surface-variant">
-              At Javitri Trading, we believe that wealth building should be accessible, transparent, and secure. Our mission is to demystify financial markets and provide our clients with robust, daily-income investment plans that outpace traditional banking instruments.
+              At Javitri Trading Service, we believe that wealth building should be accessible, transparent, and secure. Our mission is to demystify financial markets and provide our clients with robust, daily-income investment plans that outpace traditional banking instruments.
             </p>
           </section>
 

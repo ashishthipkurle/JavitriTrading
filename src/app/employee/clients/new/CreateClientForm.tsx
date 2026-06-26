@@ -330,7 +330,7 @@ export default function CreateClientForm({ plans = [] }: { plans?: any[] }) {
             <label className="flex items-start gap-2 cursor-pointer">
               <input type="checkbox" checked={termsAgreed} onChange={(e) => setTermsAgreed(e.target.checked)} className="mt-1" />
               <span className="text-label-md text-on-surface-variant">
-                I agree to the Terms & Conditions and declare that all information provided is true and correct. I authorize Javitri Trading to verify my details.
+                I agree to the Terms & Conditions and declare that all information provided is true and correct. I authorize Javitri Trading Service to verify my details.
               </span>
             </label>
           </div>

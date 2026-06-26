@@ -70,7 +70,7 @@ export default function PrintableInvestmentForm({ formData, plans = [] }: { form
       {/* HEADER */}
       <div className="pf-header-container">
         <div className="pf-logo-col">
-          <img src="/JT Logo 4.png" alt="Javitri Trading Logo" className="pf-logo" />
+          <img src="/JT Logo 4.png" alt="Javitri Trading Service Logo" className="pf-logo" />
         </div>
         <div className="pf-header-bg">
           <h1 className="pf-header-title">JAVITRI TRADING SERVICE</h1>
@@ -226,7 +226,7 @@ export default function PrintableInvestmentForm({ formData, plans = [] }: { form
       {/* HEADER ON PAGE 2 */}
       <div className="pf-header-container">
         <div className="pf-logo-col">
-          <img src="/JT Logo 4.png" alt="Javitri Trading Logo" className="pf-logo" />
+          <img src="/JT Logo 4.png" alt="Javitri Trading Service Logo" className="pf-logo" />
         </div>
         <div className="pf-header-bg">
           <h1 className="pf-header-title">JAVITRI TRADING SERVICE</h1>
@@ -305,7 +305,7 @@ export default function PrintableInvestmentForm({ formData, plans = [] }: { form
       {/* HEADER ON PAGE 3 */}
       <div className="pf-header-container">
         <div className="pf-logo-col">
-          <img src="/JT Logo 4.png" alt="Javitri Trading Logo" className="pf-logo" />
+          <img src="/JT Logo 4.png" alt="Javitri Trading Service Logo" className="pf-logo" />
         </div>
         <div className="pf-header-bg">
           <h1 className="pf-header-title">JAVITRI TRADING SERVICE</h1>

@@ -2,8 +2,8 @@ import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 
 export const metadata = {
-  title: 'Cookie Policy | Javitri Trading',
-  description: 'Cookie Policy for Javitri Trading.',
+  title: 'Cookie Policy | Javitri Trading Service',
+  description: 'Cookie Policy for Javitri Trading Service.',
 };
 
 export default function CookiePolicyPage() {
@@ -13,7 +13,7 @@ export default function CookiePolicyPage() {
       <header className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
           <Link href="/" className="text-headline-sm font-headline-sm font-bold text-primary">
-            Javitri Trading
+            Javitri Trading Service
           </Link>
           <BackButton />
         </div>
@@ -37,7 +37,7 @@ export default function CookiePolicyPage() {
           <section className="mb-8">
             <h2 className="text-title-lg font-title-lg text-primary mb-3">2. How We Use Cookies</h2>
             <p className="text-body-md font-body-md mb-4 leading-relaxed text-on-surface-variant">
-              Javitri Trading uses cookies for the following purposes:
+              Javitri Trading Service uses cookies for the following purposes:
             </p>
             <ul className="list-disc pl-5 text-body-md font-body-md mb-4 leading-relaxed text-on-surface-variant space-y-2">
               <li><strong>Essential Cookies:</strong> Required to enable core site functionality, such as securing your session and allowing you to access your dashboard.</li>

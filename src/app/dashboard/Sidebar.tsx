@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSidebar } from '@/components/SidebarContext';
 
 export default function Sidebar({ user }: { user?: any }) {
   const pathname = usePathname();
+  const { isOpen, setIsOpen } = useSidebar();
 
   const navItems = [
     { href: '/dashboard', icon: 'dashboard', label: 'Overview' },
@@ -14,7 +16,16 @@ export default function Sidebar({ user }: { user?: any }) {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-[260px] z-40 bg-surface-container-lowest border-r border-outline-variant flex flex-col p-unit-md gap-unit-sm hidden md:flex">
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm" 
+          onClick={() => setIsOpen(false)} 
+        />
+      )}
+
+      <aside className={`fixed left-0 top-0 h-full w-[260px] z-40 bg-surface-container-lowest border-r border-outline-variant flex flex-col p-unit-md gap-unit-sm transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {/* Header */}
       <div className="flex items-center gap-unit-sm mb-unit-lg px-unit-sm mt-4">
         {user?.avatarUrl ? (
@@ -25,7 +36,7 @@ export default function Sidebar({ user }: { user?: any }) {
           </div>
         )}
         <div>
-          <h2 className="text-headline-sm font-headline-sm font-bold text-primary truncate w-[160px]">{user?.name || 'Javitri Trading'}</h2>
+          <h2 className="text-headline-sm font-headline-sm font-bold text-primary truncate w-[160px]">{user?.name || 'Javitri Trading Service'}</h2>
           <p className="text-label-sm font-label-sm text-on-surface-variant">Premium Member</p>
         </div>
       </div>
@@ -38,6 +49,7 @@ export default function Sidebar({ user }: { user?: any }) {
             <Link 
               key={item.href}
               href={item.href} 
+              onClick={() => setIsOpen(false)}
               className={`flex items-center gap-unit-sm p-unit-sm rounded-lg text-label-md font-label-md transition-all ${
                 isActive 
                   ? 'bg-secondary-container text-on-secondary-container font-bold scale-[0.98]' 
@@ -55,6 +67,7 @@ export default function Sidebar({ user }: { user?: any }) {
         <div className="mt-auto flex flex-col gap-1">
           <Link 
             href="/dashboard/settings" 
+            onClick={() => setIsOpen(false)}
             className={`flex items-center gap-unit-sm p-unit-sm rounded-lg text-label-md font-label-md transition-all ${
               pathname.startsWith('/dashboard/settings') 
                 ? 'bg-secondary-container text-on-secondary-container font-bold scale-[0.98]' 
@@ -68,6 +81,7 @@ export default function Sidebar({ user }: { user?: any }) {
           </Link>
           <Link 
             href="/dashboard/support" 
+            onClick={() => setIsOpen(false)}
             className={`flex items-center gap-unit-sm p-unit-sm rounded-lg text-label-md font-label-md transition-all ${
               pathname.startsWith('/dashboard/support') 
                 ? 'bg-secondary-container text-on-secondary-container font-bold scale-[0.98]' 
@@ -82,5 +96,6 @@ export default function Sidebar({ user }: { user?: any }) {
         </div>
       </nav>
     </aside>
+    </>
   );
 }

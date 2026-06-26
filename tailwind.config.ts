@@ -110,6 +110,30 @@ const config: Config = {
         "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
         "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
         "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+      },
+      animation: {
+        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+        'reveal': 'revealText 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+        'scroll-left': 'scrollLeft 30s linear infinite',
+        'glow-pulse': 'glowPulse 2s infinite alternate',
+      },
+      keyframes: {
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        revealText: {
+          '0%': { clipPath: 'inset(0 100% 0 0)' },
+          '100%': { clipPath: 'inset(0 0 0 0)' },
+        },
+        scrollLeft: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        glowPulse: {
+          '0%': { boxShadow: '0 0 10px rgba(245, 158, 11, 0.4)' },
+          '100%': { boxShadow: '0 0 25px rgba(245, 158, 11, 0.8)' },
+        }
       }
     }
   },

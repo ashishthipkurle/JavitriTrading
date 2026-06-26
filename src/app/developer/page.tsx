@@ -2,8 +2,8 @@ import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 
 export const metadata = {
-  title: 'Meet the Developer | Javitri Trading',
-  description: 'About the developer of Javitri Trading.',
+  title: 'Meet the Developer | Javitri Trading Service',
+  description: 'About the developer of Javitri Trading Service.',
 };
 
 export default function DeveloperPage() {
@@ -13,7 +13,7 @@ export default function DeveloperPage() {
       <header className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
           <Link href="/" className="text-headline-sm font-headline-sm font-bold text-primary">
-            Javitri Trading
+            Javitri Trading Service
           </Link>
           <BackButton />
         </div>
@@ -32,7 +32,7 @@ export default function DeveloperPage() {
 
         <div className="w-full bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 shadow-sm prose prose-slate max-w-none text-on-surface">
           <p className="text-body-lg font-body-lg leading-relaxed text-on-surface-variant text-center mb-8">
-            Hello! I'm Ashish, the sole developer and architect behind the Javitri Trading platform. I built this robust, scalable, and secure institutional-grade investment management system from the ground up.
+            Hello! I'm Ashish, the sole developer and architect behind the Javitri Trading Service platform. I built this robust, scalable, and secure institutional-grade investment management system from the ground up.
           </p>
 
           <h3 className="text-title-md font-title-md text-primary mb-4 border-b border-outline-variant pb-2">Technical Architecture</h3>

@@ -30,13 +30,13 @@ export default function LandingNavLinks() {
   return (
     <nav className="hidden md:flex space-x-md h-16">
       <Link 
-        className={`${activeSection === 'home' ? 'text-secondary font-bold border-b-2 border-secondary' : 'text-on-surface-variant'} hover:text-secondary transition-colors duration-150 py-4 h-full flex items-center text-label-md font-label-md`} 
+        className={`${activeSection === 'home' ? 'text-amber-500 font-bold border-b-2 border-amber-500' : 'text-on-surface-variant'} hover:text-amber-500 transition-colors duration-150 py-4 h-full flex items-center text-label-md font-label-md`} 
         href="/"
       >
         Home
       </Link>
       <Link 
-        className={`${activeSection === 'fd-plans' ? 'text-secondary font-bold border-b-2 border-secondary' : 'text-on-surface-variant'} hover:text-secondary transition-colors duration-150 py-4 h-full flex items-center text-label-md font-label-md`} 
+        className={`${activeSection === 'fd-plans' ? 'text-amber-500 font-bold border-b-2 border-amber-500' : 'text-on-surface-variant'} hover:text-amber-500 transition-colors duration-150 py-4 h-full flex items-center text-label-md font-label-md`} 
         href="#fd-plans"
       >
         FD Plans
