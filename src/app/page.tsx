@@ -66,8 +66,8 @@ export default async function LandingPage() {
       {/* Clear PIN session when visiting landing page */}
       <ClearPinSession />
       {/* TopNavBar Component */}
-      <header className="bg-surface text-primary border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-sm md:px-md h-16">
-        <div className="max-w-container-max mx-auto w-full flex justify-between items-center">
+      <header className="bg-surface text-primary border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 h-20">
+        <div className="w-full flex justify-between items-center">
           <div className="flex items-center gap-3 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-icon.png" alt="Javitri Trading Logo" className="h-14 md:h-[76px] w-auto object-contain py-1" />
