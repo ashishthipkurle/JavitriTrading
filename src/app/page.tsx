@@ -123,7 +123,7 @@ export default async function LandingPage() {
                   <span className="material-symbols-outlined text-[18px]">send</span>
                   Join Telegram
                 </a>
-                <a href="https://join.dhan.co/?invite=QSSJH84387" target="_blank" rel="noopener noreferrer" className="bg-white/5 backdrop-blur-md border border-white/20 text-white font-label-md text-label-md px-4 md:px-5 py-3 rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                <a href="https://invite.dhan.co/?join=GEED36" target="_blank" rel="noopener noreferrer" className="bg-white/5 backdrop-blur-md border border-white/20 text-white font-label-md text-label-md px-4 md:px-5 py-3 rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
                   <span className="material-symbols-outlined text-[18px]">account_balance</span>
                   Demat Account
                 </a>
@@ -422,10 +422,10 @@ export default async function LandingPage() {
           <div className="max-w-container-max mx-auto px-sm md:px-md py-md flex flex-col md:flex-row justify-between items-center gap-xs">
             <span className="text-body-sm font-body-sm opacity-50">© {new Date().getFullYear()} Javitri Trading Service. All rights reserved.</span>
             <div className="flex items-center gap-4">
-              <Link href="/developer" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-primary transition-all flex items-center gap-1 border border-outline-variant/30 bg-surface-container-low px-2 py-1 rounded-md">
+              <a href="https://my-portfolio-3-five.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-body-sm font-body-sm opacity-70 hover:opacity-100 hover:text-primary transition-all flex items-center gap-1 border border-outline-variant/30 bg-surface-container-low px-2 py-1 rounded-md">
                 <span className="material-symbols-outlined text-[14px]">code</span>
                 Developer
-              </Link>
+              </a>
               <span className="text-body-sm font-body-sm opacity-50">Made with <span className="text-secondary-container">♥</span> in India</span>
             </div>
           </div>

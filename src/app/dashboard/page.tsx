@@ -50,36 +50,6 @@ export default async function DashboardOverviewPage() {
   return (
     <div className="p-margin-mobile md:p-margin-desktop">
       <div className="max-w-container-max mx-auto flex flex-col gap-gutter">
-        {/* KYC Banner */}
-        {user.kycStatus === 'PENDING' && (
-          <div className="bg-secondary-container/20 border border-secondary-container rounded-lg p-unit-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-secondary mt-0.5">warning</span>
-              <div>
-                <h3 className="text-label-md font-label-md text-on-secondary-container font-bold">KYC Pending</h3>
-                <p className="text-body-sm font-body-sm text-on-secondary-container/80 mt-1">Complete your identity verification to unlock full trading and withdrawal capabilities.</p>
-              </div>
-            </div>
-            <Link href="/dashboard/profile" className="bg-secondary text-on-secondary px-6 py-2 rounded-lg text-label-md font-label-md font-bold whitespace-nowrap hover:opacity-90 transition-opacity">
-              Complete KYC
-            </Link>
-          </div>
-        )}
-        {user.kycStatus === 'REJECTED' && (
-          <div className="bg-error-container border border-error rounded-lg p-unit-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-error mt-0.5">error</span>
-              <div>
-                <h3 className="text-label-md font-label-md text-on-error-container font-bold">KYC Rejected</h3>
-                <p className="text-body-sm font-body-sm text-on-error-container/80 mt-1">There was an issue with your KYC documents. Please re-upload them.</p>
-              </div>
-            </div>
-            <Link href="/dashboard/profile" className="bg-error text-on-error px-6 py-2 rounded-lg text-label-md font-label-md font-bold whitespace-nowrap hover:opacity-90 transition-opacity">
-              Update KYC
-            </Link>
-          </div>
-        )}
-
         {/* 4 Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-unit-lg shadow-sm hover:shadow-md transition-shadow">

@@ -10,10 +10,16 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
+  zoom: 125%;
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
 }
+
 
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
@@ -25,11 +31,6 @@ body {
 .material-symbols-outlined.fill,
 .material-symbols-outlined[data-weight="fill"] {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-html {
-  scroll-behavior: smooth;
-  zoom: 1.25;
 }
 
 /* Hide scrollbar but keep scrolling */
